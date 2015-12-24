@@ -1,0 +1,13 @@
+= doctype html
+html lang=en
+  head
+    meta charset=utf-8
+    title Ace example
+    = css
+      h1 { color: blue; }
+  body
+    h1 Base Template
+    #container.wrapper
+      | {{.message}}
+    = javascript
+      alert('hello');

@@ -2,5 +2,5 @@ package main
 
 func main() {
 	router := Router()
-	router.Run(":3001")
+	router.Run(":3000")
 }

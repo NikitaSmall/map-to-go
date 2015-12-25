@@ -7,12 +7,14 @@ import (
 )
 
 func SetupTemplates(router *gin.Engine) {
-	tmp := ParseTemplate("index", "", nil)
+	router.Static("/public", "./public")
+
+	tmp := parseTemplate("index", "", nil)
 	router.SetHTMLTemplate(tmp)
 }
 
-func ParseTemplate(base, inner string, data interface{}) *template.Template {
-	tmp, err := ace.Load("templates/"+base, inner, nil)
+func parseTemplate(base, inner string, data *ace.Options) *template.Template {
+	tmp, err := ace.Load("templates/"+base, inner, data)
 
 	if err != nil {
 		panic(err)

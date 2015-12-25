@@ -3,11 +3,14 @@ html lang=en
   head
     meta charset=utf-8
     title Ace example
-    = css
-      h1 { color: blue; }
+
+    link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
+    link rel="stylesheet" href="/public/css/style.css"
+
+    script src="http://code.jquery.com/jquery-2.1.4.min.js" type="text/javascript"
+    script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"
   body
-    h1 Base Template
-    #container.wrapper
-      | {{.message}}
-    = javascript
-      alert('hello');
+    #map
+
+    script src="/public/js/main.js" type="text/javascript"
+    script src="/public/js/map.js" type="text/javascript"

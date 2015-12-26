@@ -1,0 +1,18 @@
+.navbar.navbar-default.navbar-fixed-top
+  .container
+    .navbar-header
+      button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false"
+        span.sr-only Toggle navigation
+        span.icon-bar
+        span.icon-bar
+        span.icon-bar
+      a.navbar-brand href="#"
+        | Map to Go
+    .collapse.navbar-collapse#navbar-collapse
+      ul.nav.navbar-nav
+        li.active
+          a href="#"
+            | Main map
+        li
+          a href="#"
+            | About

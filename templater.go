@@ -6,9 +6,11 @@ import (
 	"html/template"
 )
 
-func SetupTemplates(router *gin.Engine) {
+func SetupStaticFiles(router *gin.Engine) {
 	router.Static("/public", "./public")
+}
 
+func SetupTemplates(router *gin.Engine) {
 	tmp := parseTemplate("index", "", nil)
 	router.SetHTMLTemplate(tmp)
 }

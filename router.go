@@ -1,15 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 func Router() *gin.Engine {
-	router := gin.New()
-
-	router.Use(gin.Logger())
+	router := gin.Default()
 
 	SetupTemplates(router)
 	setupRoutes(router)
@@ -19,7 +16,8 @@ func Router() *gin.Engine {
 
 func setupRoutes(router *gin.Engine) {
 	router.GET("/", indexHandler)
-	router.POST("/point", addPointHandler)
+	router.POST("/points", addPointHandler)
+	router.GET("/points", getPointsHandler)
 }
 
 func indexHandler(c *gin.Context) {
@@ -27,12 +25,26 @@ func indexHandler(c *gin.Context) {
 }
 
 func addPointHandler(c *gin.Context) {
-	var point Point
-	err := c.BindJSON(&point)
+	point := CreatePoint()
+
+	err := c.BindJSON(point)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(point)
+
+	err = point.Save()
+	if err != nil {
+		panic(err)
+	}
 
 	c.JSON(http.StatusOK, point)
+}
+
+func getPointsHandler(c *gin.Context) {
+	points, err := GetPoints()
+	if err != nil {
+		panic(err)
+	}
+
+	c.JSON(http.StatusOK, points)
 }

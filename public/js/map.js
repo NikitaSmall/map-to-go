@@ -13,13 +13,21 @@ ymaps.ready(function() {
   objectManager.clusters.options.set('preset', 'islands#greenClusterIcons');
   map.geoObjects.add(objectManager);
 
+  $.ajax({
+    method: 'GET',
+    url: '/points',
+    contentType: "application/json; charset=utf-8"
+  }).done(function(data) {
+    console.log(data);
+    // objectManager.add(data);
+  });
+
   map.events.add('click', function(e) {
     var coords = e.get('coords');
-    console.log(coords);
-
+    
     $.ajax({
       method: 'POST',
-      url: '/point',
+      url: '/points',
       contentType: "application/json; charset=utf-8",
       data: JSON.stringify({ "loc": coords.reverse() })
     }).done(function(data) {

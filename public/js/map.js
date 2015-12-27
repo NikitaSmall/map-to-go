@@ -1,5 +1,8 @@
+"use strict";
+
 ymaps.ready(function() {
   var map = new ymaps.Map('map', {
+    // [latitude, longitude]
     center: [46.23, 30.47],
     zoom: 10
   });
@@ -18,31 +21,19 @@ ymaps.ready(function() {
     url: '/points',
     contentType: "application/json; charset=utf-8"
   }).done(function(data) {
-    console.log(data);
-    // objectManager.add(data);
+    objectManager.add(data);
   });
 
   map.events.add('click', function(e) {
     var coords = e.get('coords');
-    
+
     $.ajax({
       method: 'POST',
       url: '/points',
       contentType: "application/json; charset=utf-8",
       data: JSON.stringify({ "loc": coords.reverse() })
     }).done(function(data) {
-      console.log(data);
-      // objectManager.add(data);
+      objectManager.add(data);
     });
-
-    var mapObject = {
-      "type": "Feature",
-      "id": Math.floor((Math.random() * 1000) + 1),
-      "geometry": {
-        "type": "Point",
-        "coordinates": coords
-      }
-    };
-
   });
 });

@@ -22,7 +22,7 @@ func AddPointHandler(c *gin.Context) {
 		panic(err)
 	}
 
-	c.JSON(http.StatusOK, point)
+	c.JSON(http.StatusOK, point.PrepareToMap())
 }
 
 func GetPointsHandler(c *gin.Context) {
@@ -31,5 +31,5 @@ func GetPointsHandler(c *gin.Context) {
 		panic(err)
 	}
 
-	c.JSON(http.StatusOK, points)
+	c.JSON(http.StatusOK, PointsArrayToMap(points))
 }

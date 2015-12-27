@@ -6,6 +6,18 @@ import (
 
 type Pointer interface {
 	Save() error
+	PrepareToMap() *MapObject
+}
+
+type MapObject struct {
+	Type     string   `json:"type"`
+	Id       string   `json:"id"`
+	Geometry Geometry `json:"geometry"`
+}
+
+type Geometry struct {
+	Type   string    `json:"type"`
+	Coords []float64 `json:"coordinates"`
 }
 
 type Point struct {
@@ -22,6 +34,17 @@ func CreatePoint() *Point {
 	}
 }
 
+func GetPoints() (*Points, error) {
+	session := Connect()
+	pointsCollection := session.DB("mapToGo").C("points")
+
+	var points Points
+	err := pointsCollection.Find(nil).All(&points)
+	session.Close()
+
+	return &points, err
+}
+
 func (point *Point) Save() error {
 	session := Connect()
 	pointsCollection := session.DB("mapToGo").C("points")
@@ -32,14 +55,24 @@ func (point *Point) Save() error {
 	return err
 }
 
-func GetPoints() (*Points, error) {
-	session := Connect()
-	pointsCollection := session.DB("mapToGo").C("points")
+func (point *Point) PrepareToMap() *MapObject {
+	geometry := Geometry{
+		Type:   "Point",
+		Coords: []float64{point.Loc[1], point.Loc[0]},
+	}
 
-	var points Points
-	err := pointsCollection.Find(nil).All(&points)
+	return &MapObject{
+		Type:     "Feature",
+		Id:       point.Id,
+		Geometry: geometry,
+	}
+}
 
-	session.Close()
+func PointsArrayToMap(points *Points) *[]MapObject {
+	mapPoints := make([]MapObject, 0)
+	for _, point := range *points {
+		mapPoints = append(mapPoints, *point.PrepareToMap())
+	}
 
-	return &points, err
+	return &mapPoints
 }

@@ -11,6 +11,15 @@ func IndexHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, config.TemplateFullPath("index", ""), nil)
 }
 
+func GetPointsHandler(c *gin.Context) {
+	points, err := geometry.GetPoints()
+	if err != nil {
+		panic(err)
+	}
+
+	c.JSON(http.StatusOK, geometry.PointsArrayToMap(points))
+}
+
 func AddPointHandler(c *gin.Context) {
 	point := geometry.CreatePoint()
 
@@ -27,11 +36,18 @@ func AddPointHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, point.PrepareToMap())
 }
 
-func GetPointsHandler(c *gin.Context) {
-	points, err := geometry.GetPoints()
+func DeletePointHandler(c *gin.Context) {
+	point := &geometry.Point{}
+
+	err := c.BindJSON(point)
 	if err != nil {
 		panic(err)
 	}
 
-	c.JSON(http.StatusOK, geometry.PointsArrayToMap(points))
+	err = point.Delete()
+	if err != nil {
+		panic(err)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Point #" + point.Id + " removed"})
 }

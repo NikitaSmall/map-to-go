@@ -18,6 +18,8 @@ func Router() *gin.Engine {
 
 func setupRoutes(router *gin.Engine) {
 	router.GET("/", IndexHandler)
-	router.POST("/points", AddPointHandler)
+
 	router.GET("/points", GetPointsHandler)
+	router.POST("/points", AddPointHandler)
+	router.DELETE("/points", DeletePointHandler)
 }

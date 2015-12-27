@@ -36,4 +36,20 @@ ymaps.ready(function() {
       objectManager.add(data);
     });
   });
+
+  objectManager.objects.events.add('contextmenu', function (e) {
+    var objectId = e.get('objectId');
+    var object = objectManager.objects.getById(objectId);
+    var coords = object.geometry.coordinates.reverse();
+
+    $.ajax({
+      method: 'DELETE',
+      url: '/points',
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({ "id": object.id, "loc": coords })
+    }).done(function(data) {
+      objectManager.remove(object);
+    });
+  });
+
 });

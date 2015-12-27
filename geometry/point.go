@@ -7,6 +7,7 @@ import (
 
 type Pointer interface {
 	Save() error
+	Delete() error
 	PrepareToMap() *MapObject
 }
 
@@ -44,6 +45,16 @@ func GetPoints() (*Points, error) {
 	session.Close()
 
 	return &points, err
+}
+
+func (point *Point) Delete() error {
+	session := config.Connect()
+	pointsCollection := session.DB("mapToGo").C("points")
+
+	err := pointsCollection.Remove(point)
+	session.Close()
+
+	return err
 }
 
 func (point *Point) Save() error {

@@ -1,6 +1,8 @@
 "use strict";
 
 ymaps.ready(function() {
+  var conn;
+
   var map = new ymaps.Map('map', {
     // [latitude, longitude]
     center: [46.23, 30.47],
@@ -51,5 +53,25 @@ ymaps.ready(function() {
       objectManager.remove(object);
     });
   });
+
+  if (window["WebSocket"]) {
+    conn = new WebSocket("ws://localhost:3000/hub");
+
+    conn.onmessage = function(e) {
+      var obj;
+      var message = JSON.parse(e.data);
+
+      switch (message.action) {
+        case "point_add":
+          objectManager.add(message.message);
+          break;
+        case "point_remove":
+          obj = objectManager.objects.getById(message.message.id);
+          objectManager.remove(obj);
+          break;
+      }
+    }
+
+  }
 
 });

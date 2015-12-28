@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/nikitasmall/map-to-go/config"
+	"github.com/nikitasmall/map-to-go/socket"
 )
 
 func Router() *gin.Engine {
@@ -12,7 +13,7 @@ func Router() *gin.Engine {
 	config.SetupTemplates(router)
 
 	setupRoutes(router)
-	go hub.run()
+	go socket.MainHub.Run()
 
 	return router
 }

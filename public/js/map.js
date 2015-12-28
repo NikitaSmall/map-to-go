@@ -55,23 +55,85 @@ ymaps.ready(function() {
   });
 
   if (window["WebSocket"]) {
-    conn = new WebSocket("ws://localhost:3000/hub");
+    conn = new WebSocket("ws://" + getCurrentUrl() + "/hub");
+
+    conn.onopen = function(e) {
+      createNotify(
+        "<strong>Welcome!</strong>",
+        "Socket connection to server was successfully established!",
+        "info"
+      );
+    }
 
     conn.onmessage = function(e) {
-      var obj;
       var message = JSON.parse(e.data);
 
       switch (message.action) {
         case "point_add":
-          objectManager.add(message.message);
+          socketPointAdd(objectManager, message.message)
           break;
         case "point_remove":
-          obj = objectManager.objects.getById(message.message.id);
-          objectManager.remove(obj);
+          socketPointRemove(objectManager, message.message)
           break;
       }
+    }
+
+    conn.onclosed = function(e) {
+      createNotify(
+        "<strong>Something happened!</strong>",
+        "Socket connection was closed!",
+        "danger"
+      );
     }
 
   }
 
 });
+
+var getCurrentUrl = function() {
+  var docUrl = document.URL;
+  var url;
+
+  if (docUrl.indexOf('http://') > -1) {
+    url = docUrl.substring(7, docUrl.length - 1);
+  } else if (docUrl.indexOf('https://') > -1) {
+    url = docUrl.substring(8, docUrl.length - 1);
+  } else {
+    url = docUrl;
+  }
+
+  return url;
+}
+
+var createNotify = function(title, text, type) {
+  $.notify({
+    title: title + " ",
+    message: text
+  }, {
+    offset: {
+      x: 10,
+      y: 100
+    },
+    type: type
+  });
+}
+
+var socketPointAdd = function(objectManager, message) {
+  objectManager.add(message);
+  createNotify(
+    "New point was created!",
+    "Find it on the map!",
+    "success"
+  );
+}
+
+var socketPointRemove = function(objectManager, message) {
+  var obj = objectManager.objects.getById(message.id);
+  if (obj) { objectManager.remove(obj); }
+
+  createNotify(
+    "Point was deleted!",
+    "Somebody cleanups the map...",
+    "warning"
+  );
+}

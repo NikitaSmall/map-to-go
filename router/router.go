@@ -12,6 +12,7 @@ func Router() *gin.Engine {
 	config.SetupTemplates(router)
 
 	setupRoutes(router)
+	go hub.run()
 
 	return router
 }
@@ -22,4 +23,6 @@ func setupRoutes(router *gin.Engine) {
 	router.GET("/points", GetPointsHandler)
 	router.POST("/points", AddPointHandler)
 	router.DELETE("/points", DeletePointHandler)
+
+	router.GET("/hub", HubHandler)
 }

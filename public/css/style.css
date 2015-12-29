@@ -60,10 +60,6 @@ a.close{
   padding: 11px 3px;
 }
 
-.close:before {
-  content: "×";
-}
-
 
 .chat li .chat-body p
 {

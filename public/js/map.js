@@ -22,7 +22,7 @@ ymaps.ready(function() {
           '<button class="btn btn-warning btn-sm" id="btn-chat">' +
             'Send</button>' +
         '</span>' +
-        '<a class="close" href="#"></a>' +
+        '<a class="close" href="#">&times;</a>' +
       '</div>' +
     '</div>' +
     '<div class="panel-body">' +
@@ -199,7 +199,7 @@ ymaps.ready(function() {
       }
     }
 
-    conn.onclosed = function(e) {
+    conn.onclose = function(e) {
       createNotify(
         "<strong>Something happened!</strong>",
         "Socket connection was closed!",

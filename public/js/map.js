@@ -15,19 +15,27 @@ ymaps.ready(function() {
   });
 
   var MyBalloonContentLayout = ymaps.templateLayoutFactory.createClass(
-    '<div class="panel-heading">' +
-      '<h3 class="panel-title">$[properties.balloonHeader]</h3>' +
-      '<a class="close pull-right" href="#">&times;</a>' +
+    '<div class="panel-footer">' +
+      '<div class="input-group">' +
+        '<input id="btn-input" type="text" class="form-control input-sm" placeholder="Type your message here..." />' +
+        '<span class="input-group-btn">' +
+          '<button class="btn btn-warning btn-sm" id="btn-chat">' +
+            'Send</button>' +
+        '</span>' +
+        '<a class="close" href="#"></a>' +
+      '</div>' +
     '</div>' +
     '<div class="panel-body">' +
-      '$[properties.balloonContent]' +
-      '<div class="arrow"></div>' +
+      '<ul class="chat">' +
+        '$[properties.balloonContent]' +
+      '</ul>' +
     '</div>'
   );
 
   var MyBalloonLayout = ymaps.templateLayoutFactory.createClass(
-    '<div class="panel panel-default">' +
-    '$[[options.contentLayout observeSize minWidth=235 maxWidth=235 maxHeight=350]]' +
+    '<div class="panel panel-primary">' +
+      '$[[options.contentLayout]]' +
+      '<div class="arrow"></div>' +
     '</div>', {
     /**
      * Строит экземпляр макета на основе шаблона и добавляет его в родительский HTML-элемент.
@@ -128,12 +136,7 @@ ymaps.ready(function() {
     }
   });
 
-  objectManager.objects.options.set('balloonShadow', false);
-  objectManager.objects.options.set('balloonLayout', MyBalloonLayout);
-  objectManager.objects.options.set('balloonContentLayout', MyBalloonContentLayout);
-  objectManager.objects.options.set('balloonPanelMaxMapArea', 0);
-  objectManager.objects.options.set('preset', 'islands#greenDotIcon');
-  objectManager.clusters.options.set('preset', 'islands#greenClusterIcons');
+  setOptionsObjectManager(objectManager, MyBalloonLayout, MyBalloonContentLayout);
   map.geoObjects.add(objectManager);
 
   $.ajax({
@@ -232,6 +235,7 @@ var createNotify = function(title, text, type) {
       x: 10,
       y: 100
     },
+    newest_on_top: true,
     type: type
   });
 }
@@ -254,4 +258,28 @@ var socketPointRemove = function(objectManager, message) {
     "Somebody cleanups the map...",
     "warning"
   );
+}
+
+var setOptionsObjectManager = function(objectManager, balloonLayout, balloonContentLayout) {
+  objectManager.objects.options.set('balloonOffset', [2, -50]);
+  objectManager.objects.options.set('balloonShadow', false);
+  objectManager.objects.options.set('balloonLayout', balloonLayout);
+  objectManager.objects.options.set('balloonContentLayout', balloonContentLayout);
+  objectManager.objects.options.set('balloonPanelMaxMapArea', 0);
+  objectManager.objects.options.set('preset', 'islands#greenDotIcon');
+  objectManager.clusters.options.set('preset', 'islands#greenClusterIcons');
+}
+
+var balloonMessage = function(message, author, createdAt) {
+  return  '<li class="right clearfix">' +
+            '<div class="chat-body clearfix">' +
+                '<div class="header">' +
+                    '<small class=" text-muted"><span class="glyphicon glyphicon-time"></span>' + createdAt + '</small>' +
+                    '<strong class="pull-right primary-font">' + author + '</strong>' +
+                '</div>' +
+                '<p>' +
+                    message +
+                '</p>' +
+            '</div>' +
+        '</li>'
 }

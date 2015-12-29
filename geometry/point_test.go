@@ -22,12 +22,12 @@ func TestCreatePoint(t *testing.T) {
 	}
 }
 
-func TestSave(t *testing.T) {
+func TestSaveDelete(t *testing.T) {
 	session := config.Connect()
 	pointsCollection := session.DB("mapToGo").C("points")
 	defer func() { session.Close() }()
 
-	count, err := pointsCollection.Count()
+	initCount, err := pointsCollection.Count()
 	if err != nil {
 		t.Error("Counting raised an error! ", err)
 	}
@@ -39,35 +39,13 @@ func TestSave(t *testing.T) {
 		t.Error("Saving raised an error! ", err)
 	}
 
-	new_count, err := pointsCollection.Count()
+	countAfterInsert, err := pointsCollection.Count()
 	if err != nil {
 		t.Error("Counting raised an error! ", err)
 	}
 
-	if count+1 != new_count {
-		t.Error("new point was not inserted! Count: ", new_count)
-	}
-
-	err = point.Delete()
-	if err != nil {
-		t.Error("Deleting raised an error! ", err)
-	}
-}
-
-func TestDelete(t *testing.T) {
-	session := config.Connect()
-	pointsCollection := session.DB("mapToGo").C("points")
-	defer func() { session.Close() }()
-
-	point := testPoint()
-	err := point.Save()
-	if err != nil {
-		t.Error("Saving raised an error! ", err)
-	}
-
-	count, err := pointsCollection.Count()
-	if err != nil {
-		t.Error("Counting raised an error! ", err)
+	if initCount+1 != countAfterInsert {
+		t.Error("new point was not inserted! Count: ", countAfterInsert)
 	}
 
 	err = point.Delete()
@@ -75,13 +53,13 @@ func TestDelete(t *testing.T) {
 		t.Error("Deleting raised an error! ", err)
 	}
 
-	new_count, err := pointsCollection.Count()
+	countAfterDelete, err := pointsCollection.Count()
 	if err != nil {
 		t.Error("Counting raised an error! ", err)
 	}
 
-	if count-1 != new_count {
-		t.Error("new point was not inserted! Count: ", new_count)
+	if countAfterInsert-1 != countAfterDelete {
+		t.Error("new point was not inserted! Count: ", countAfterDelete)
 	}
 }
 

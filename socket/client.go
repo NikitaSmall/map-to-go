@@ -16,11 +16,13 @@ const (
 	maxMessageSize = 512
 )
 
+// generic base client for websocket communication
 type Client struct {
 	ws   *websocket.Conn
 	send chan []byte
 }
 
+// function creates a client
 func CreateClient(ws *websocket.Conn) *Client {
 	return &Client{
 		ws:   ws,
@@ -28,11 +30,15 @@ func CreateClient(ws *websocket.Conn) *Client {
 	}
 }
 
+// function removes a client from the main hub
 func (c *Client) removeClient() {
 	MainHub.unregister <- c
 	c.ws.Close()
 }
 
+// function reads info from client's socket
+// we will not get any message from it,
+// we don't listen to it
 func (c *Client) ReadPump() {
 	defer c.removeClient()
 
@@ -44,19 +50,21 @@ func (c *Client) ReadPump() {
 	})
 
 	for {
-		_, message, err := c.ws.ReadMessage()
+		_, _, err := c.ws.ReadMessage()
 		if err != nil {
 			break
 		}
-		MainHub.broadcast <- message
 	}
 }
 
+// function writes to client's socket
 func (c *Client) write(messageType int, message []byte) error {
 	c.ws.SetWriteDeadline(time.Now().Add(writeWait))
 	return c.ws.WriteMessage(messageType, message)
 }
 
+// function gets messages from client's channel
+// and can write to client by calling write function
 func (c *Client) WritePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {

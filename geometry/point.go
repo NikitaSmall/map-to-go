@@ -5,12 +5,15 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+// interface of generic geometrical object
 type Pointer interface {
 	Save() error
 	Delete() error
 	PrepareToMap() *MapObject
 }
 
+// struct created to be passed to
+// yandex map's object manager
 type MapObject struct {
 	Type       string     `json:"type"`
 	Id         string     `json:"id"`
@@ -18,30 +21,45 @@ type MapObject struct {
 	Properties Properties `json:"properties"`
 }
 
+// base struct for MapObject
+// provided type (point, circle etc.)
+// and coordinates
+// (they will be reversed for ya objectManager)
 type Geometry struct {
 	Type   string    `json:"type"`
 	Coords []float64 `json:"coordinates"`
 }
 
+// info properties for MapObject
 type Properties struct {
 	BallonContent string `json:"balloonContent"`
-	BallonHeader  string `json:"balloonHeader"`
+	HintContent   string `json:"hintContent"`
 }
 
+// base point for yandex map
+// note, that coordinates stored in other order
+// than presented on map
 type Point struct {
 	Id string `json:"id" bson:"_id,omitempty"`
 	// [longitude, latitude]
-	Loc []float64 `json:"loc" binding:"required"`
+	Loc     []float64 `json:"loc" binding:"required"`
+	Address string    `json:"address"`
 }
 
+// array of points for objectManager startup
 type Points []Point
 
+// function creates a new point with uniq ID
+// and empty address field
 func CreatePoint() *Point {
 	return &Point{
-		Id: bson.NewObjectId().Hex(),
+		Id:      bson.NewObjectId().Hex(),
+		Address: "",
 	}
 }
 
+// function returns an array of all points
+// that presented in mongoDB collection
 func GetPoints() (*Points, error) {
 	session := config.Connect()
 	pointsCollection := session.DB("mapToGo").C("points")
@@ -53,6 +71,7 @@ func GetPoints() (*Points, error) {
 	return &points, err
 }
 
+// function deletes a point from collection
 func (point *Point) Delete() error {
 	session := config.Connect()
 	pointsCollection := session.DB("mapToGo").C("points")
@@ -63,6 +82,7 @@ func (point *Point) Delete() error {
 	return err
 }
 
+// function saves a point to collection
 func (point *Point) Save() error {
 	session := config.Connect()
 	pointsCollection := session.DB("mapToGo").C("points")
@@ -73,6 +93,8 @@ func (point *Point) Save() error {
 	return err
 }
 
+// function makes preparations to present point on the map
+// returns assempled mapObject from point properties
 func (point *Point) PrepareToMap() *MapObject {
 	geometry := Geometry{
 		Type:   "Point",
@@ -81,7 +103,7 @@ func (point *Point) PrepareToMap() *MapObject {
 
 	properties := Properties{
 		BallonContent: "Wait for data...",
-		BallonHeader:  "Messaging platform",
+		HintContent:   point.Address,
 	}
 
 	return &MapObject{
@@ -92,6 +114,8 @@ func (point *Point) PrepareToMap() *MapObject {
 	}
 }
 
+// function takes a slice of points and
+// returns slice of mapObjects
 func PointsArrayToMap(points *Points) []*MapObject {
 	mapPoints := make([]*MapObject, 0)
 	for _, point := range *points {

@@ -12,14 +12,20 @@ type Pointer interface {
 }
 
 type MapObject struct {
-	Type     string   `json:"type"`
-	Id       string   `json:"id"`
-	Geometry Geometry `json:"geometry"`
+	Type       string     `json:"type"`
+	Id         string     `json:"id"`
+	Geometry   Geometry   `json:"geometry"`
+	Properties Properties `json:"properties"`
 }
 
 type Geometry struct {
 	Type   string    `json:"type"`
 	Coords []float64 `json:"coordinates"`
+}
+
+type Properties struct {
+	BallonContent string `json:"balloonContent"`
+	BallonHeader  string `json:"balloonHeader"`
 }
 
 type Point struct {
@@ -73,10 +79,16 @@ func (point *Point) PrepareToMap() *MapObject {
 		Coords: []float64{point.Loc[1], point.Loc[0]},
 	}
 
+	properties := Properties{
+		BallonContent: "Wait for data...",
+		BallonHeader:  "Messaging platform",
+	}
+
 	return &MapObject{
-		Type:     "Feature",
-		Id:       point.Id,
-		Geometry: geometry,
+		Type:       "Feature",
+		Id:         point.Id,
+		Geometry:   geometry,
+		Properties: properties,
 	}
 }
 

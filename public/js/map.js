@@ -60,12 +60,31 @@ ymaps.ready(function() {
     });
   });
 
+  // hover mouse over point and get address if needed
+  objectManager.objects.events.add('mouseenter', function(e) {
+    var objectId = e.get('objectId');
+    var object = objectManager.objects.getById(objectId);
+    var coords = object.geometry.coordinates.reverse();
+
+    if (object.properties.hintContent == "") {
+      $.ajax({
+        method: 'PATCH',
+        url: '/points',
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify({ "id": object.id, "loc": coords })
+      }).done(function(data) {
+        object.properties.hintContent = data.message;
+        objectManager.objects.hint.open(objectId);
+      });
+    }
+  });
+
   if (window["WebSocket"]) {
     conn = new WebSocket("ws://" + config.getCurrentUrl() + "/hub");
 
     conn.onopen = function(e) {
       socket.createNotify(
-        "<strong>Welcome!</strong>",
+        "Welcome!",
         "Socket connection to server was successfully established!",
         "info"
       );
@@ -81,12 +100,15 @@ ymaps.ready(function() {
         case "point_remove":
           socket.PointRemove(objectManager, message.message)
           break;
+        case "hint_added":
+          socket.HintAdd(objectManager, message.message)
+          break;
       }
     }
 
     conn.onclose = function(e) {
       socket.createNotify(
-        "<strong>Something happened!</strong>",
+        "Something happened!",
         "Socket connection was closed!",
         "danger"
       );

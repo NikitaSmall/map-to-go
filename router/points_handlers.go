@@ -33,6 +33,23 @@ func AddPointHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, point.PrepareToMap())
 }
 
+func SetAddressPointHandler(c *gin.Context) {
+	point := &geometry.Point{}
+
+	err := c.BindJSON(point)
+	if err != nil {
+		panic(err)
+	}
+
+	err = point.UpdateAddress()
+	if err != nil {
+		panic(err)
+	}
+
+	socket.MainHub.SendMessage(socket.HintAdded, point.PrepareToMap())
+	c.JSON(http.StatusOK, gin.H{"message": point.Address})
+}
+
 func DeletePointHandler(c *gin.Context) {
 	point := &geometry.Point{}
 

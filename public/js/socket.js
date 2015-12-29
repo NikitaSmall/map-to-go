@@ -1,6 +1,6 @@
 var createNotify = function(title, text, type) {
   $.notify({
-    title: title + " ",
+    title: "<strong>" + title + "</strong> ",
     message: text
   }, {
     offset: {
@@ -13,6 +13,18 @@ var createNotify = function(title, text, type) {
 }
 
 module.exports.createNotify = createNotify;
+
+module.exports.HintAdd = function(objectManager, message) {
+  var obj = objectManager.objects.getById(message.id);
+  if (obj) {
+    obj.properties.hintContent = message.properties.hintContent
+    createNotify(
+      "Point specifies it's address!",
+      "It has following address: " + message.properties.hintContent,
+      "success"
+    );
+  }
+}
 
 module.exports.PointAdd = function(objectManager, message) {
   objectManager.add(message);

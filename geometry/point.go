@@ -9,7 +9,9 @@ import (
 type Pointer interface {
 	Save() error
 	Delete() error
+	UpdateAddress() error
 	PrepareToMap() *MapObject
+	DefineAddress()
 }
 
 // struct created to be passed to
@@ -71,12 +73,25 @@ func GetPoints() (*Points, error) {
 	return &points, err
 }
 
+// function search an address
+// and saves it to collection
+func (point *Point) UpdateAddress() error {
+	session := config.Connect()
+	pointsCollection := session.DB("mapToGo").C("points")
+
+	point.DefineAddress()
+	err := pointsCollection.Update(bson.M{"_id": point.Id}, point)
+	session.Close()
+
+	return err
+}
+
 // function deletes a point from collection
 func (point *Point) Delete() error {
 	session := config.Connect()
 	pointsCollection := session.DB("mapToGo").C("points")
 
-	err := pointsCollection.Remove(point)
+	err := pointsCollection.Remove(bson.M{"_id": point.Id})
 	session.Close()
 
 	return err

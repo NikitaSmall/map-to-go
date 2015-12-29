@@ -23,6 +23,7 @@ func setupRoutes(router *gin.Engine) {
 
 	router.GET("/points", GetPointsHandler)
 	router.POST("/points", AddPointHandler)
+	router.PATCH("/points", SetAddressPointHandler)
 	router.DELETE("/points", DeletePointHandler)
 
 	router.GET("/hub", HubHandler)

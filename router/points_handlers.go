@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/nikitasmall/map-to-go/geometry"
 	"github.com/nikitasmall/map-to-go/socket"
+	// "log"
 	"net/http"
 )
 
@@ -18,13 +19,9 @@ func GetPointsHandler(c *gin.Context) {
 
 func AddPointHandler(c *gin.Context) {
 	point := geometry.CreatePoint()
+	point.BindPoint(c)
 
-	err := c.BindJSON(point)
-	if err != nil {
-		panic(err)
-	}
-
-	err = point.Save()
+	err := point.Save()
 	if err != nil {
 		panic(err)
 	}
@@ -35,13 +32,9 @@ func AddPointHandler(c *gin.Context) {
 
 func SetAddressPointHandler(c *gin.Context) {
 	point := &geometry.Point{}
+	point.BindPoint(c)
 
-	err := c.BindJSON(point)
-	if err != nil {
-		panic(err)
-	}
-
-	err = point.UpdateAddress()
+	err := point.UpdateAddress()
 	if err != nil {
 		panic(err)
 	}
@@ -52,13 +45,9 @@ func SetAddressPointHandler(c *gin.Context) {
 
 func DeletePointHandler(c *gin.Context) {
 	point := &geometry.Point{}
+	point.BindPoint(c)
 
-	err := c.BindJSON(point)
-	if err != nil {
-		panic(err)
-	}
-
-	err = point.Delete()
+	err := point.Delete()
 	if err != nil {
 		panic(err)
 	}

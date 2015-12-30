@@ -18,11 +18,13 @@ module.exports.HintAdd = function(objectManager, message) {
   var obj = objectManager.objects.getById(message.id);
   if (obj) {
     obj.properties.hintContent = message.properties.hintContent
-    createNotify(
-      "Point specifies it's address!",
-      "It has following address: " + message.properties.hintContent,
-      "success"
-    );
+    if (message.properties.hintContent != "not available") {
+      createNotify(
+        "Point specifies it's address!",
+        "It has following address: " + message.properties.hintContent,
+        "success"
+      );
+    }
   }
 }
 

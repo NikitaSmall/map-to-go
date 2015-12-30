@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/yosssi/ace"
 	"html/template"
+	"log"
 )
 
 // function that takes gin.Engine router and
@@ -26,7 +27,7 @@ func parseTemplate(base, inner string, data *ace.Options) *template.Template {
 	tmp, err := ace.Load("templates/"+base, inner, data)
 
 	if err != nil {
-		panic(err)
+		log.Panic("Error on ace template parcing! ", err.Error())
 	}
 
 	return tmp

@@ -2,7 +2,6 @@ package geometry
 
 import (
 	"github.com/nikitasmall/map-to-go/config"
-	// "gopkg.in/mgo.v2/bson"
 	"testing"
 )
 
@@ -73,5 +72,14 @@ func TestPrepareToMap(t *testing.T) {
 
 	if mapObject.Geometry.Coords[0] != point.Loc[1] || mapObject.Geometry.Coords[1] != point.Loc[0] {
 		t.Error("Coordinates are not inverted for yandex map!")
+	}
+}
+
+func TestDefineAddress(t *testing.T) {
+	point := testPoint()
+	point.DefineAddress(GoogleGeocoder)
+
+	if point.Address == "" {
+		t.Error("Address is not set after DefineAddress function.")
 	}
 }

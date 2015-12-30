@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/vrischmann/envconfig"
+	"log"
 )
 
 var conf struct {
@@ -15,7 +16,7 @@ var conf struct {
 func initializeConfig() map[string]string {
 	err := envconfig.Init(&conf)
 	if err != nil {
-		panic(err)
+		log.Panic("Error on env config initialize! ", err.Error())
 	}
 
 	return map[string]string{

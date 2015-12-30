@@ -2,6 +2,7 @@ package socket
 
 import (
 	"encoding/json"
+	"log"
 )
 
 type Hub struct {
@@ -25,7 +26,7 @@ func (hub *Hub) Register(client *Client) {
 func (hub *Hub) SendMessage(action string, message interface{}) {
 	obj, err := json.Marshal(SocketMessage{Action: action, Message: message})
 	if err != nil {
-		panic(err)
+		log.Panic("Error on marchalising message. ", err.Error())
 	}
 
 	hub.broadcast <- obj

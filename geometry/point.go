@@ -64,11 +64,12 @@ func CreatePoint() *Point {
 // that presented in mongoDB collection
 func GetPoints() (*Points, error) {
 	session := config.Connect()
+	defer func() { session.Close() }()
+
 	pointsCollection := session.DB("mapToGo").C("points")
 
 	var points Points
 	err := pointsCollection.Find(nil).All(&points)
-	session.Close()
 
 	return &points, err
 }
@@ -77,11 +78,12 @@ func GetPoints() (*Points, error) {
 // and saves it to collection
 func (point *Point) UpdateAddress() error {
 	session := config.Connect()
+	defer func() { session.Close() }()
+
 	pointsCollection := session.DB("mapToGo").C("points")
 
-	point.DefineAddress()
+	point.DefineAddress(GoogleGeocoder)
 	err := pointsCollection.Update(bson.M{"_id": point.Id}, point)
-	session.Close()
 
 	return err
 }
@@ -89,10 +91,11 @@ func (point *Point) UpdateAddress() error {
 // function deletes a point from collection
 func (point *Point) Delete() error {
 	session := config.Connect()
+	defer func() { session.Close() }()
+
 	pointsCollection := session.DB("mapToGo").C("points")
 
 	err := pointsCollection.Remove(bson.M{"_id": point.Id})
-	session.Close()
 
 	return err
 }
@@ -100,10 +103,11 @@ func (point *Point) Delete() error {
 // function saves a point to collection
 func (point *Point) Save() error {
 	session := config.Connect()
+	defer func() { session.Close() }()
+
 	pointsCollection := session.DB("mapToGo").C("points")
 
 	err := pointsCollection.Insert(point)
-	session.Close()
 
 	return err
 }

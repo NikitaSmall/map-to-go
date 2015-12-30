@@ -2,6 +2,7 @@ package config
 
 import (
 	"gopkg.in/mgo.v2"
+	"log"
 )
 
 // function returns a session to mongoDB,
@@ -11,7 +12,7 @@ func Connect() *mgo.Session {
 
 	session, err := mgo.Dial(uri)
 	if err != nil {
-		panic(err)
+		log.Panic("Error on db connection! ", err.Error())
 	}
 
 	return session

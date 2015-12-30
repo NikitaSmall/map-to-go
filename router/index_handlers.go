@@ -9,5 +9,5 @@ import (
 // function handles GET request to index page
 // and returns a basic template
 func IndexHandler(c *gin.Context) {
-	c.HTML(http.StatusOK, config.TemplateFullPath("index", ""), nil)
+	c.HTML(http.StatusOK, config.TemplateFullPath("templates/", "index"), nil)
 }

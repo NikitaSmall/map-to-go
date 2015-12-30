@@ -12,7 +12,7 @@ func Router() *gin.Engine {
 	router := gin.Default()
 
 	config.SetupStaticFiles(router)
-	config.SetupTemplates(router)
+	config.SetupTemplates(router, "templates/")
 
 	setupRoutes(router)
 	go socket.MainHub.Run()

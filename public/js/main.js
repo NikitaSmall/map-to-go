@@ -1,14 +1,19 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var socket = require('./socket.js');
+
 module.exports.ContentLayout = ymaps.templateLayoutFactory.createClass(
   '<div class="panel-footer">' +
-    '<div class="input-group">' +
-      '<input id="btn-input" type="text" class="form-control input-sm" placeholder="Type your message here..." />' +
-      '<span class="input-group-btn">' +
-        '<button class="btn btn-warning btn-sm" id="btn-chat">' +
+    '<form id="note-form">' +
+      '<div class="input-group">' +
+        '<input type="hidden" id="point-id" value="" />' +
+        '<input id="btn-input" type="text" autocomplete="off" class="form-control input-sm" placeholder="Type your message here..." />' +
+        '<span class="input-group-btn">' +
+          '<button class="btn btn-warning btn-sm" id="btn-chat" type="submit">' +
           'Send</button>' +
-      '</span>' +
-      '<a class="close" href="#">&times;</a>' +
-    '</div>' +
+        '</span>' +
+        '<a class="close" href="#">&times;</a>' +
+      '</div>' +
+    '</form>' +
   '</div>' +
   '<div class="panel-body">' +
     '<ul class="chat">' +
@@ -16,6 +21,18 @@ module.exports.ContentLayout = ymaps.templateLayoutFactory.createClass(
     '</ul>' +
   '</div>'
 );
+
+var insertMessage = function(data) {
+  var $chat = $('.chat');
+  if (
+    ($chat.html() == "Wait for data...") ||
+    ($chat.html() == "There are no notes")
+  ) {
+    $chat.html(socket.balloonMessage(data.note, data.author, data.createdAt))
+  } else {
+    $chat.append(socket.balloonMessage(data.note, data.author, data.createdAt))
+  }
+};
 
 module.exports.Layout = ymaps.templateLayoutFactory.createClass(
   '<div class="panel panel-primary">' +
@@ -30,10 +47,32 @@ module.exports.Layout = ymaps.templateLayoutFactory.createClass(
    */
   build: function () {
     this.constructor.superclass.build.call(this);
+    $('#point-id').val(this._data.object.id);
+
     this._$element = $('.panel', this.getParentElement());
     this.applyElementOffset();
 
     this._$element.find('.close').on('click', $.proxy(this.onCloseClick, this));
+    $('#note-form').bind('submit', this.onNoteFormSubmit);
+  },
+
+  onNoteFormSubmit: function(e) {
+    e.preventDefault();
+    var message = $('#btn-input').val();
+    var id = $('#point-id').val();
+
+    if (message != '') {
+      $.ajax({
+        method: 'POST',
+        url: '/notes',
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify({ "pointId": id, "note": message })
+      }).done(function(data) {
+        insertMessage(data);
+        $('#btn-input').val('');
+      });
+    }
+
   },
 
   /**
@@ -43,6 +82,7 @@ module.exports.Layout = ymaps.templateLayoutFactory.createClass(
    * @name clear
    */
   clear: function () {
+    $('#note-form').unbind('submit', this.onNoteFormSubmit);
     this._$element.find('.close').off('click');
     this.constructor.superclass.clear.call(this);
   },
@@ -121,7 +161,7 @@ module.exports.Layout = ymaps.templateLayoutFactory.createClass(
   }
 });
 
-},{}],2:[function(require,module,exports){
+},{"./socket.js":4}],2:[function(require,module,exports){
 "use strict";
 ymaps.ready(function() {
   // initial work

@@ -9,7 +9,7 @@ import (
 )
 
 // function binds json input from request to passed point struct
-func BindPoint(point *geometry.Point, c *gin.Context) {
+func bindPoint(point *geometry.Point, c *gin.Context) {
 	err := c.BindJSON(point)
 	if err != nil {
 		log.Panic("Error on point binding from json. ", err.Error())
@@ -32,7 +32,7 @@ func GetPointsHandler(c *gin.Context) {
 // saves new point to collection
 func AddPointHandler(c *gin.Context) {
 	point := geometry.CreatePoint()
-	BindPoint(point, c)
+	bindPoint(point, c)
 
 	err := point.Save()
 	if err != nil {
@@ -48,7 +48,7 @@ func AddPointHandler(c *gin.Context) {
 // and save changes to collection
 func SetAddressPointHandler(c *gin.Context) {
 	point := &geometry.Point{}
-	BindPoint(point, c)
+	bindPoint(point, c)
 
 	err := point.UpdateAddress()
 	if err != nil {
@@ -64,7 +64,7 @@ func SetAddressPointHandler(c *gin.Context) {
 // deletes point from the collection
 func DeletePointHandler(c *gin.Context) {
 	point := &geometry.Point{}
-	BindPoint(point, c)
+	bindPoint(point, c)
 
 	err := point.Delete()
 	if err != nil {

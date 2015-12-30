@@ -29,5 +29,7 @@ func setupRoutes(router *gin.Engine) {
 	router.PATCH("/points", SetAddressPointHandler)
 	router.DELETE("/points", DeletePointHandler)
 
+	router.POST("/notes", AddNoteHandler)
+
 	router.GET("/hub", HubHandler)
 }

@@ -13,7 +13,7 @@ html, body, #map {
 }
 
 .panel {
-  width: 300px;
+  width: 400px;
   max-height: 500px;
   overflow-y: hidden;
   padding: 5px, 0px, 5px, 0px;

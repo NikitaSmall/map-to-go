@@ -86,7 +86,8 @@ func GetPoints() (*Points, error) {
 }
 
 // function search an address
-// and saves it to collection
+// and saves it to specific point
+// inside the points collection
 func (point *Point) UpdateAddress() error {
 	session := config.Connect()
 	defer func() { session.Close() }()
@@ -94,7 +95,7 @@ func (point *Point) UpdateAddress() error {
 	pointsCollection := session.DB("mapToGo").C("points")
 
 	point.DefineAddress(GoogleGeocoder)
-	err := pointsCollection.Update(bson.M{"_id": point.Id}, point)
+	err := pointsCollection.Update(bson.M{"_id": point.Id}, bson.M{"$set": bson.M{"address": point.Address}})
 
 	return err
 }

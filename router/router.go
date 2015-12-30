@@ -6,6 +6,8 @@ import (
 	"github.com/nikitasmall/map-to-go/socket"
 )
 
+// function setups router configs and
+// returns router that ready to be started
 func Router() *gin.Engine {
 	router := gin.Default()
 
@@ -18,6 +20,7 @@ func Router() *gin.Engine {
 	return router
 }
 
+// function setups routes to be handled
 func setupRoutes(router *gin.Engine) {
 	router.GET("/", IndexHandler)
 

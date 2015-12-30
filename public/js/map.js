@@ -48,7 +48,7 @@ ymaps.ready(function() {
   objectManager.objects.events.add('contextmenu', function (e) {
     var objectId = e.get('objectId');
     var object = objectManager.objects.getById(objectId);
-    var coords = object.geometry.coordinates.reverse();
+    var coords = [object.geometry.coordinates[1], object.geometry.coordinates[0]];
 
     $.ajax({
       method: 'DELETE',
@@ -64,7 +64,7 @@ ymaps.ready(function() {
   objectManager.objects.events.add('mouseenter', function(e) {
     var objectId = e.get('objectId');
     var object = objectManager.objects.getById(objectId);
-    var coords = object.geometry.coordinates.reverse();
+    var coords = [object.geometry.coordinates[1], object.geometry.coordinates[0]];
 
     if (object.properties.hintContent == "") {
       $.ajax({

@@ -1,10 +1,8 @@
 package geometry
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/nikitasmall/map-to-go/config"
 	"gopkg.in/mgo.v2/bson"
-	"log"
 )
 
 // interface of generic geometrical object
@@ -14,7 +12,6 @@ type Pointer interface {
 	UpdateAddress() error
 	PrepareToMap() *MapObject
 	DefineAddress()
-	BindPoint(c *gin.Context)
 }
 
 // struct created to be passed to
@@ -60,14 +57,6 @@ func CreatePoint() *Point {
 	return &Point{
 		Id:      bson.NewObjectId().Hex(),
 		Address: "",
-	}
-}
-
-// function binds json input to point struct
-func (point *Point) BindPoint(c *gin.Context) {
-	err := c.BindJSON(point)
-	if err != nil {
-		log.Panic("Error on point binding from json. ", err.Error())
 	}
 }
 

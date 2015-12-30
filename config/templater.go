@@ -17,14 +17,14 @@ func SetupStaticFiles(router *gin.Engine) {
 // set to serve an ACE template
 // router can serve only one template at a time
 // so this is a weak point (hardcoded template name)
-func SetupTemplates(router *gin.Engine) {
-	tmp := parseTemplate("index", "", nil)
+func SetupTemplates(router *gin.Engine, relativePath string) {
+	tmp := parseTemplate(relativePath, "index", "", nil)
 	router.SetHTMLTemplate(tmp)
 }
 
 // function loads ACE template with provided name
-func parseTemplate(base, inner string, data *ace.Options) *template.Template {
-	tmp, err := ace.Load("templates/"+base, inner, data)
+func parseTemplate(relativePath, base, inner string, data *ace.Options) *template.Template {
+	tmp, err := ace.Load(relativePath+base, inner, data)
 
 	if err != nil {
 		log.Panic("Error on ace template parcing! ", err.Error())
@@ -36,6 +36,6 @@ func parseTemplate(base, inner string, data *ace.Options) *template.Template {
 // function returns full name of template
 // with relative path and delimeter
 // (specific for ACE)
-func TemplateFullPath(base, inner string) string {
-	return "templates/" + base + ":" + inner
+func TemplateFullPath(relativePath, base string) string {
+	return relativePath + base + ":"
 }

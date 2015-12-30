@@ -23,7 +23,19 @@ func (hub *Hub) Register(client *Client) {
 	hub.register <- client
 }
 
+func (hub *Hub) isEmpty() bool {
+	if len(hub.clients) == 0 {
+		return true
+	} else {
+		return false
+	}
+}
+
 func (hub *Hub) SendMessage(action string, message interface{}) {
+	if hub.isEmpty() {
+		return
+	}
+
 	obj, err := json.Marshal(SocketMessage{Action: action, Message: message})
 	if err != nil {
 		log.Panic("Error on marchalising message. ", err.Error())

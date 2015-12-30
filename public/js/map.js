@@ -28,6 +28,12 @@ ymaps.ready(function() {
     contentType: "application/json; charset=utf-8"
   }).done(function(data) {
     objectManager.add(data);
+  }).fail(function(data, textStatus, errorThrown) {
+    socket.createNotify(
+      "Error occurred on the server!",
+      data.responseJSON.message,
+      "danger"
+    );
   });
 
   // create new point
@@ -41,6 +47,12 @@ ymaps.ready(function() {
       data: JSON.stringify({ "loc": coords.reverse() })
     }).done(function(data) {
       objectManager.add(data);
+    }).fail(function(data, textStatus, errorThrown) {
+      socket.createNotify(
+        "Error occurred on the server!",
+        data.responseJSON.message,
+        "danger"
+      );
     });
   });
 
@@ -57,6 +69,12 @@ ymaps.ready(function() {
       data: JSON.stringify({ "id": object.id, "loc": coords })
     }).done(function(data) {
       objectManager.remove(object);
+    }).fail(function(data, textStatus, errorThrown) {
+      socket.createNotify(
+        "Error occurred on the server!",
+        data.responseJSON.message,
+        "danger"
+      );
     });
   });
 
@@ -75,6 +93,12 @@ ymaps.ready(function() {
       }).done(function(data) {
         object.properties.hintContent = data.message;
         objectManager.objects.hint.open(objectId);
+      }).fail(function(data, textStatus, errorThrown) {
+        socket.createNotify(
+          "Error occurred on the server!",
+          data.responseJSON.message,
+          "danger"
+        );
       });
     }
   });

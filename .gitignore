@@ -1,1 +1,3 @@
 map-to-go
+*/*.out
+*/coverage.html

@@ -18,7 +18,7 @@ func bindPoint(point *geometry.Point, c *gin.Context) {
 
 // function handles GET request and
 // return all the points to map
-func GetPointsHandler(c *gin.Context) {
+func getPointsHandler(c *gin.Context) {
 	points, err := geometry.GetPoints()
 	if err != nil {
 		log.Print("Error processing of getting points from collection. ", err.Error())
@@ -30,7 +30,7 @@ func GetPointsHandler(c *gin.Context) {
 
 // function handles POST request and
 // saves new point to collection
-func AddPointHandler(c *gin.Context) {
+func addPointHandler(c *gin.Context) {
 	point := geometry.CreatePoint()
 	bindPoint(point, c)
 
@@ -46,7 +46,7 @@ func AddPointHandler(c *gin.Context) {
 
 // function handles PATCH request, defines address
 // and save changes to collection
-func SetAddressPointHandler(c *gin.Context) {
+func setAddressPointHandler(c *gin.Context) {
 	point := &geometry.Point{}
 	bindPoint(point, c)
 
@@ -62,7 +62,7 @@ func SetAddressPointHandler(c *gin.Context) {
 
 // function handles DELETE request and
 // deletes point from the collection
-func DeletePointHandler(c *gin.Context) {
+func deletePointHandler(c *gin.Context) {
 	point := &geometry.Point{}
 	bindPoint(point, c)
 

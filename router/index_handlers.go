@@ -8,6 +8,6 @@ import (
 
 // function handles GET request to index page
 // and returns a basic template
-func IndexHandler(c *gin.Context) {
+func indexHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, config.TemplateFullPath("templates/", "index"), nil)
 }

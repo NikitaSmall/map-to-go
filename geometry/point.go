@@ -84,9 +84,7 @@ func (point *Point) UpdateAddress() error {
 	pointsCollection := session.DB("mapToGo").C("points")
 
 	point.DefineAddress(GoogleGeocoder)
-	err := pointsCollection.Update(bson.M{"_id": point.Id}, bson.M{"$set": bson.M{"address": point.Address}})
-
-	return err
+	return pointsCollection.Update(bson.M{"_id": point.Id}, bson.M{"$set": bson.M{"address": point.Address}})
 }
 
 // function deletes a point from collection
@@ -96,9 +94,7 @@ func (point *Point) Delete() error {
 
 	pointsCollection := session.DB("mapToGo").C("points")
 
-	err := pointsCollection.Remove(bson.M{"_id": point.Id})
-
-	return err
+	return pointsCollection.Remove(bson.M{"_id": point.Id})
 }
 
 // function saves a point to collection
@@ -108,9 +104,7 @@ func (point *Point) Save() error {
 
 	pointsCollection := session.DB("mapToGo").C("points")
 
-	err := pointsCollection.Insert(point)
-
-	return err
+	return pointsCollection.Insert(point)
 }
 
 // function makes preparations to present point on the map

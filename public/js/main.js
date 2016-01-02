@@ -30,7 +30,7 @@ var insertMessage = function(data) {
   ) {
     $chat.html(socket.balloonMessage(data.note, data.author, data.createdAt))
   } else {
-    $chat.append(socket.balloonMessage(data.note, data.author, data.createdAt))
+    $chat.prepend(socket.balloonMessage(data.note, data.author, data.createdAt))
   }
 };
 
@@ -47,13 +47,28 @@ module.exports.Layout = ymaps.templateLayoutFactory.createClass(
    */
   build: function () {
     this.constructor.superclass.build.call(this);
-    $('#point-id').val(this._data.object.id);
+
+    var pointId = this._data.object.id;
+    $('#point-id').val(pointId);
 
     this._$element = $('.panel', this.getParentElement());
     this.applyElementOffset();
 
     this._$element.find('.close').on('click', $.proxy(this.onCloseClick, this));
     $('#note-form').bind('submit', this.onNoteFormSubmit);
+
+    $.ajax({
+      method: 'GET',
+      url: '/notes/' + pointId
+    }).done(function(data) {
+      if (!!data && data.length > 0) {
+        for (var i = 0; i < data.length; i++) {
+          insertMessage(data[i]);
+        }
+      } else {
+        $('.chat').html("There are no notes");
+      }
+    });
   },
 
   onNoteFormSubmit: function(e) {

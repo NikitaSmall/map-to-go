@@ -15,7 +15,7 @@ func bindNote(note *note.Note, c *gin.Context) {
 	}
 }
 
-func AddNoteHandler(c *gin.Context) {
+func addNoteHandler(c *gin.Context) {
 	note := note.CreateNote()
 	bindNote(note, c)
 
@@ -25,5 +25,17 @@ func AddNoteHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 	} else {
 		c.JSON(http.StatusOK, note)
+	}
+}
+
+func getNotesHandler(c *gin.Context) {
+	pointId := c.Param("pointId")
+
+	notes, err := note.GetNotes(pointId)
+	if err != nil {
+		log.Print("Error processing of retrieving notes from collection. ", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+	} else {
+		c.JSON(http.StatusOK, notes)
 	}
 }

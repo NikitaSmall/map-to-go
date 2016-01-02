@@ -14,7 +14,7 @@ var upgrader = websocket.Upgrader{
 
 // function handles GET request and
 // upgrades it to websocket connection
-func HubHandler(c *gin.Context) {
+func hubHandler(c *gin.Context) {
 	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		panic(err)

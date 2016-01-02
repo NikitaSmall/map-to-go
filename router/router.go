@@ -22,14 +22,15 @@ func Router() *gin.Engine {
 
 // function setups routes to be handled
 func setupRoutes(router *gin.Engine) {
-	router.GET("/", IndexHandler)
+	router.GET("/", indexHandler)
 
-	router.GET("/points", GetPointsHandler)
-	router.POST("/points", AddPointHandler)
-	router.PATCH("/points", SetAddressPointHandler)
-	router.DELETE("/points", DeletePointHandler)
+	router.GET("/points", getPointsHandler)
+	router.POST("/points", addPointHandler)
+	router.PATCH("/points", setAddressPointHandler)
+	router.DELETE("/points", deletePointHandler)
 
-	router.POST("/notes", AddNoteHandler)
+	router.GET("/notes/:pointId", getNotesHandler)
+	router.POST("/notes", addNoteHandler)
 
-	router.GET("/hub", HubHandler)
+	router.GET("/hub", hubHandler)
 }

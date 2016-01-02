@@ -15,10 +15,10 @@ import (
 func newPointTestRouter() *gin.Engine {
 	testRouter := gin.Default()
 
-	testRouter.GET("/points", GetPointsHandler)
-	testRouter.POST("/points", AddPointHandler)
-	testRouter.PATCH("/points", SetAddressPointHandler)
-	testRouter.DELETE("/points", DeletePointHandler)
+	testRouter.GET("/points", getPointsHandler)
+	testRouter.POST("/points", addPointHandler)
+	testRouter.PATCH("/points", setAddressPointHandler)
+	testRouter.DELETE("/points", deletePointHandler)
 
 	return testRouter
 }

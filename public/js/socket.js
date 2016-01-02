@@ -49,6 +49,7 @@ module.exports.PointRemove = function(objectManager, message) {
 }
 
 module.exports.balloonMessage = function(message, author, createdAt) {
+  if (author == "") { author = "Unknown"; }
   return  '<li class="right clearfix">' +
             '<div class="chat-body clearfix">' +
                 '<div class="header">' +

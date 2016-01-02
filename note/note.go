@@ -9,6 +9,7 @@ import (
 type Noter interface {
 	Save() error
 	Delete() error
+	sanitizeContent()
 }
 
 type Note struct {
@@ -26,8 +27,13 @@ func CreateNote() *Note {
 		Id:        bson.NewObjectId().Hex(),
 		Author:    "",
 		Note:      "",
-		CreatedAt: time.Now().String(),
+		CreatedAt: time.Now().Format("2006-01-02 15:04:05"),
 	}
+}
+
+func (note *Note) sanitizeContent() {
+	note.Author = sanitizeString(note.Author)
+	note.Note = sanitizeString(note.Note)
 }
 
 // function save new note to collection
@@ -36,6 +42,8 @@ func (note *Note) Save() error {
 	defer func() { session.Close() }()
 
 	notesCollection := session.DB("mapToGo").C("notes")
+
+	note.sanitizeContent()
 	return notesCollection.Insert(note)
 }
 

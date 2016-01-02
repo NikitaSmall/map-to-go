@@ -33,16 +33,6 @@ html, body, #map {
     border-bottom: 1px dotted #B3A9A9;
 }
 
-.chat li.left .chat-body
-{
-    margin-left: 60px;
-}
-
-.chat li.right .chat-body
-{
-    margin-right: 60px;
-}
-
 a.close{
   z-index: 10000;
   float:right;

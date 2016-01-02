@@ -2,6 +2,7 @@ package geometry
 
 import (
 	"github.com/nikitasmall/map-to-go/config"
+	"github.com/nikitasmall/map-to-go/note"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -12,6 +13,8 @@ type Pointer interface {
 	UpdateAddress() error
 	PrepareToMap() *MapObject
 	DefineAddress()
+
+	AddNote(note note.Note) error
 }
 
 // struct created to be passed to
@@ -44,8 +47,9 @@ type Properties struct {
 type Point struct {
 	Id string `json:"id" bson:"_id,omitempty"`
 	// [longitude, latitude]
-	Loc     []float64 `json:"loc" binding:"required"`
-	Address string    `json:"address"`
+	Loc     []float64  `json:"loc" binding:"required"`
+	Address string     `json:"address"`
+	Notes   note.Notes `json:"notes"`
 }
 
 // array of points for objectManager startup
@@ -58,6 +62,18 @@ func CreatePoint() *Point {
 		Id:      bson.NewObjectId().Hex(),
 		Address: "",
 	}
+}
+
+func GetPoint(pointId string) (*Point, error) {
+	session := config.Connect()
+	defer func() { session.Close() }()
+
+	pointsCollection := session.DB("mapToGo").C("points")
+
+	var point Point
+	err := pointsCollection.FindId(pointId).One(&point)
+
+	return &point, err
 }
 
 // function returns an array of all points
@@ -85,6 +101,16 @@ func (point *Point) UpdateAddress() error {
 
 	point.DefineAddress(GoogleGeocoder)
 	return pointsCollection.Update(bson.M{"_id": point.Id}, bson.M{"$set": bson.M{"address": point.Address}})
+}
+
+func (point *Point) AddNote(note *note.Note) error {
+	session := config.Connect()
+	defer func() { session.Close() }()
+
+	pointsCollection := session.DB("mapToGo").C("points")
+
+	note.SanitizeContent()
+	return pointsCollection.Update(bson.M{"_id": point.Id}, bson.M{"$push": bson.M{"notes": note}})
 }
 
 // function deletes a point from collection

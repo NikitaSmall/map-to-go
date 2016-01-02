@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/nikitasmall/map-to-go/geometry"
 	"github.com/nikitasmall/map-to-go/note"
 	"log"
 	"net/http"
@@ -19,9 +20,14 @@ func addNoteHandler(c *gin.Context) {
 	note := note.CreateNote()
 	bindNote(note, c)
 
-	err := note.Save()
+	point, err := geometry.GetPoint(note.PointId)
 	if err != nil {
-		log.Print("Error processing of saving note to collection. ", err.Error())
+		log.Panic("Cannot get access to point! ", err.Error())
+	}
+
+	err = point.AddNote(note)
+	if err != nil {
+		log.Print("Error processing of saving note to point: ", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 	} else {
 		c.JSON(http.StatusOK, note)
@@ -31,11 +37,11 @@ func addNoteHandler(c *gin.Context) {
 func getNotesHandler(c *gin.Context) {
 	pointId := c.Param("pointId")
 
-	notes, err := note.GetNotes(pointId)
+	point, err := geometry.GetPoint(pointId)
 	if err != nil {
-		log.Print("Error processing of retrieving notes from collection. ", err.Error())
+		log.Print("Error processing of retrieving notes from point: ", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 	} else {
-		c.JSON(http.StatusOK, notes)
+		c.JSON(http.StatusOK, point.Notes)
 	}
 }

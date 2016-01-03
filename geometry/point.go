@@ -64,9 +64,10 @@ func CreatePoint() *Point {
 	}
 }
 
+// function returns point with provided id
 func GetPoint(pointId string) (*Point, error) {
 	session := config.Connect()
-	defer func() { session.Close() }()
+	defer session.Close()
 
 	pointsCollection := session.DB("mapToGo").C("points")
 
@@ -80,7 +81,7 @@ func GetPoint(pointId string) (*Point, error) {
 // that presented in mongoDB collection
 func GetPoints() (*Points, error) {
 	session := config.Connect()
-	defer func() { session.Close() }()
+	defer session.Close()
 
 	pointsCollection := session.DB("mapToGo").C("points")
 
@@ -95,7 +96,7 @@ func GetPoints() (*Points, error) {
 // inside the points collection
 func (point *Point) UpdateAddress() error {
 	session := config.Connect()
-	defer func() { session.Close() }()
+	defer session.Close()
 
 	pointsCollection := session.DB("mapToGo").C("points")
 
@@ -103,9 +104,10 @@ func (point *Point) UpdateAddress() error {
 	return pointsCollection.Update(bson.M{"_id": point.Id}, bson.M{"$set": bson.M{"address": point.Address}})
 }
 
+// function saves new note into array inside of point
 func (point *Point) AddNote(note *note.Note) error {
 	session := config.Connect()
-	defer func() { session.Close() }()
+	defer session.Close()
 
 	pointsCollection := session.DB("mapToGo").C("points")
 
@@ -116,17 +118,17 @@ func (point *Point) AddNote(note *note.Note) error {
 // function deletes a point from collection
 func (point *Point) Delete() error {
 	session := config.Connect()
-	defer func() { session.Close() }()
+	defer session.Close()
 
 	pointsCollection := session.DB("mapToGo").C("points")
 
 	return pointsCollection.Remove(bson.M{"_id": point.Id})
 }
 
-// function saves a point to collection
+// function saves a new point to collection
 func (point *Point) Save() error {
 	session := config.Connect()
-	defer func() { session.Close() }()
+	defer session.Close()
 
 	pointsCollection := session.DB("mapToGo").C("points")
 

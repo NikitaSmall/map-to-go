@@ -2,6 +2,7 @@ package geometry
 
 import (
 	"github.com/nikitasmall/map-to-go/config"
+	"github.com/nikitasmall/map-to-go/note"
 	"testing"
 )
 
@@ -10,6 +11,21 @@ func testPoint() *Point {
 	point := CreatePoint()
 	point.Loc = []float64{42.1, 24.1}
 	return point
+}
+
+// bad point fixture
+func testBadPoint() *Point {
+	point := CreatePoint()
+	point.Loc = []float64{33.32, 44.36}
+	return point
+}
+
+// basic note fixture
+func testNote() *note.Note {
+	note := note.CreateNote()
+	note.Note = "some_text"
+
+	return note
 }
 
 func TestCreatePoint(t *testing.T) {
@@ -21,10 +37,40 @@ func TestCreatePoint(t *testing.T) {
 	}
 }
 
+func TestNewPointWithEmptyNotesArray(t *testing.T) {
+	point := CreatePoint()
+
+	if len(point.Notes) > 0 {
+		t.Error("Point initialized with not-empty notes array.", point.Notes)
+	}
+}
+
+func TestPointWithNotes(t *testing.T) {
+	point := testPoint()
+	defer point.Delete()
+
+	err := point.Save()
+	if err != nil {
+		t.Error("Saving raised an error! ", err)
+	}
+
+	note := testNote()
+	point.AddNote(note)
+
+	point, err = GetPoint(point.Id)
+	if err != nil {
+		t.Error("Cannot find point! ", err)
+	}
+
+	if len(point.Notes) != 1 {
+		t.Error("Note was not added to point array!", point.Notes)
+	}
+}
+
 func TestSaveDelete(t *testing.T) {
 	session := config.Connect()
 	pointsCollection := session.DB("mapToGo").C("points")
-	defer func() { session.Close() }()
+	defer session.Close()
 
 	initCount, err := pointsCollection.Count()
 	if err != nil {
@@ -81,5 +127,45 @@ func TestDefineAddress(t *testing.T) {
 
 	if point.Address == "" {
 		t.Error("Address is not set after DefineAddress function.")
+	}
+}
+
+func TestBadPointAddress(t *testing.T) {
+	point := testBadPoint()
+	defer point.Delete()
+
+	err := point.Save()
+	if err != nil {
+		t.Error("Saving raised an error! ", err)
+	}
+
+	point.UpdateAddress()
+
+	if point.Address != "not available" {
+		t.Error("Point became normal for now!", point.Address)
+	}
+}
+
+func TestGetPointsAndMapObjects(t *testing.T) {
+	pointOne := testPoint()
+	pointTwo := testPoint()
+
+	pointOne.Save()
+	pointTwo.Save()
+
+	defer func() {
+		pointOne.Delete()
+		pointTwo.Delete()
+	}()
+
+	points, err := GetPoints()
+	if err != nil {
+		t.Error("Cannot get points from base! ", err)
+	}
+
+	mapObjects := PointsArrayToMap(points)
+
+	if len(mapObjects) >= 2 {
+		t.Error("Something wrong in trasform to mapObject!")
 	}
 }

@@ -61,7 +61,6 @@ module.exports.Layout = ymaps.templateLayoutFactory.createClass(
       method: 'GET',
       url: '/notes/' + pointId
     }).done(function(data) {
-      console.log(data);
       if (!!data && data.length > 0) {
         for (var i = 0; i < data.length; i++) {
           insertMessage(data[i]);

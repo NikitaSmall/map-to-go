@@ -123,7 +123,7 @@ func TestPrepareToMap(t *testing.T) {
 
 func TestDefineAddress(t *testing.T) {
 	point := testPoint()
-	point.DefineAddress(GoogleGeocoder)
+	point.defineAddress(GoogleGeocoder)
 
 	if point.Address == "" {
 		t.Error("Address is not set after DefineAddress function.")
@@ -165,7 +165,7 @@ func TestGetPointsAndMapObjects(t *testing.T) {
 
 	mapObjects := PointsArrayToMap(points)
 
-	if len(mapObjects) >= 2 {
-		t.Error("Something wrong in trasform to mapObject!")
+	if len(mapObjects) != len(*points) {
+		t.Error("Something wrong in trasform to mapObject!", len(mapObjects))
 	}
 }

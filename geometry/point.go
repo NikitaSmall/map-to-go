@@ -10,9 +10,10 @@ import (
 type Pointer interface {
 	Save() error
 	Delete() error
-	UpdateAddress() error
 	PrepareToMap() *MapObject
-	DefineAddress()
+
+	defineAddress()
+	UpdateAddress() error
 
 	AddNote(note note.Note) error
 }
@@ -100,7 +101,7 @@ func (point *Point) UpdateAddress() error {
 
 	pointsCollection := session.DB("mapToGo").C("points")
 
-	point.DefineAddress(GoogleGeocoder)
+	point.defineAddress(GoogleGeocoder)
 	return pointsCollection.Update(bson.M{"_id": point.Id}, bson.M{"$set": bson.M{"address": point.Address}})
 }
 

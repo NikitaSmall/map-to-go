@@ -6,6 +6,7 @@ const (
 	PointAdded   = "point_add"
 	PointRemoved = "point_remove"
 	HintAdded    = "hint_added"
+	NoteAdded    = "note_added"
 )
 
 // basic message that will be sent to the browser

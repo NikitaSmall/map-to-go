@@ -48,9 +48,9 @@ module.exports.PointRemove = function(objectManager, message) {
   );
 }
 
-module.exports.balloonMessage = function(message, author, createdAt) {
+module.exports.balloonMessage = function(message, author, createdAt, messageId) {
   if (author == "") { author = "Unknown"; }
-  return  '<li class="right clearfix">' +
+  return  '<li class="right clearfix" id="' + messageId + '">' +
             '<div class="chat-body clearfix">' +
                 '<div class="header">' +
                     '<small class=" text-muted"><span class="glyphicon glyphicon-time"></span>' + createdAt + '</small>' +

@@ -12,23 +12,30 @@ type Hub struct {
 	unregister chan *Client
 }
 
-var MainHub = Hub{
-	clients:    make(map[*Client]bool),
-	broadcast:  make(chan []byte),
-	register:   make(chan *Client),
-	unregister: make(chan *Client),
+func newHub() Hub {
+	return Hub{
+		clients:    make(map[*Client]bool),
+		broadcast:  make(chan []byte),
+		register:   make(chan *Client),
+		unregister: make(chan *Client),
+	}
 }
+
+var MainHub = newHub()
 
 func (hub *Hub) Register(client *Client) {
 	hub.register <- client
 }
 
-func (hub *Hub) isEmpty() bool {
-	if len(hub.clients) == 0 {
-		return true
-	} else {
-		return false
+func (hub *Hub) unregisterClient(c *Client) {
+	if _, ok := hub.clients[c]; ok {
+		delete(hub.clients, c)
+		close(c.send)
 	}
+}
+
+func (hub *Hub) isEmpty() bool {
+	return len(hub.clients) == 0
 }
 
 func (hub *Hub) SendMessage(action string, message interface{}) {
@@ -50,9 +57,10 @@ func (hub *Hub) Run() {
 		case c := <-hub.register:
 			hub.clients[c] = true
 		case c := <-hub.unregister:
-			if _, ok := hub.clients[c]; ok {
-				delete(hub.clients, c)
-				close(c.send)
+			hub.unregisterClient(c)
+			if hub.isEmpty() {
+				HubManager.unregisterHub <- c.clientFor
+				return
 			}
 		case m := <-hub.broadcast:
 			for c := range hub.clients {

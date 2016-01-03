@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/nikitasmall/map-to-go/geometry"
 	"github.com/nikitasmall/map-to-go/note"
+	"github.com/nikitasmall/map-to-go/socket"
 	"log"
 	"net/http"
 )
@@ -30,6 +31,7 @@ func addNoteHandler(c *gin.Context) {
 		log.Print("Error processing of saving note to point: ", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 	} else {
+		socket.NoteHub[note.PointId].SendMessage(socket.NoteAdded, note)
 		c.JSON(http.StatusOK, note)
 	}
 }

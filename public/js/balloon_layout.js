@@ -1,4 +1,6 @@
 var socket = require('./socket.js');
+var config = require('./settings.js');
+var connection;
 
 module.exports.ContentLayout = ymaps.templateLayoutFactory.createClass(
   '<div class="panel-footer">' +
@@ -22,14 +24,15 @@ module.exports.ContentLayout = ymaps.templateLayoutFactory.createClass(
 );
 
 var insertMessage = function(data) {
+  if ($('li#' + data.id).length) { return; }
   var $chat = $('.chat');
   if (
     ($chat.html() == "Wait for data...") ||
     ($chat.html() == "There are no notes")
   ) {
-    $chat.html(socket.balloonMessage(data.note, data.author, data.createdAt))
+    $chat.html(socket.balloonMessage(data.note, data.author, data.createdAt, data.id))
   } else {
-    $chat.prepend(socket.balloonMessage(data.note, data.author, data.createdAt))
+    $chat.prepend(socket.balloonMessage(data.note, data.author, data.createdAt, data.id))
   }
 };
 
@@ -46,9 +49,31 @@ module.exports.Layout = ymaps.templateLayoutFactory.createClass(
    */
   build: function () {
     this.constructor.superclass.build.call(this);
-
     var pointId = this._data.object.id;
     $('#point-id').val(pointId);
+    console.log("ws://" + config.getCurrentUrl() + "/hub/" + pointId);
+    connection = new WebSocket("ws://" + config.getCurrentUrl() + "/hub/" + pointId);
+
+    connection.onopen = function(e) {
+      socket.createNotify(
+        "You opened balloon!",
+        "Socket connection to server was successfully established!",
+        "info"
+      );
+    }
+
+    connection.onmessage = function(e) {
+      var message = JSON.parse(e.data);
+      insertMessage(message.message)
+    }
+
+    connection.onclose = function(e) {
+      socket.createNotify(
+        "Balloon was closed!",
+        "You close it or someone deletes this point!",
+        "warning"
+      );
+    }
 
     this._$element = $('.panel', this.getParentElement());
     this.applyElementOffset();
@@ -96,6 +121,8 @@ module.exports.Layout = ymaps.templateLayoutFactory.createClass(
    * @name clear
    */
   clear: function () {
+    connection.close();
+
     $('#note-form').unbind('submit', this.onNoteFormSubmit);
     this._$element.find('.close').off('click');
     this.constructor.superclass.clear.call(this);

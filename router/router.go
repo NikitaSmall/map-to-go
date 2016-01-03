@@ -15,7 +15,9 @@ func Router() *gin.Engine {
 	config.SetupTemplates(router, "templates/")
 
 	setupRoutes(router)
+
 	go socket.MainHub.Run()
+	go socket.HubManager.ManageNoteHub()
 
 	return router
 }
@@ -33,4 +35,5 @@ func setupRoutes(router *gin.Engine) {
 	router.POST("/notes", addNoteHandler)
 
 	router.GET("/hub", hubHandler)
+	router.GET("/hub/:hubName", noteHubHandler)
 }

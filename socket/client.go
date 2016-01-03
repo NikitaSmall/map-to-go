@@ -18,21 +18,28 @@ const (
 
 // generic base client for websocket communication
 type Client struct {
-	ws   *websocket.Conn
-	send chan []byte
+	clientFor string
+	ws        *websocket.Conn
+	send      chan []byte
 }
 
 // function creates a client
-func CreateClient(ws *websocket.Conn) *Client {
+func CreateClient(ws *websocket.Conn, clientFor string) *Client {
 	return &Client{
-		ws:   ws,
-		send: make(chan []byte, 256),
+		clientFor: clientFor,
+		ws:        ws,
+		send:      make(chan []byte, 256),
 	}
 }
 
-// function removes a client from the main hub
+// function removes a client from the hub
 func (c *Client) removeClient() {
-	MainHub.unregister <- c
+	if c.clientFor == "main" {
+		MainHub.unregister <- c
+	} else {
+		NoteHub[c.clientFor].unregister <- c
+	}
+
 	c.ws.Close()
 }
 

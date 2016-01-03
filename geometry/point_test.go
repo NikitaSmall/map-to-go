@@ -4,7 +4,14 @@ import (
 	"github.com/nikitasmall/map-to-go/config"
 	"github.com/nikitasmall/map-to-go/note"
 	"testing"
+
+	"os"
 )
+
+func TestMain(m *testing.M) {
+	databaseName = "mapToGoTest"
+	os.Exit(m.Run())
+}
 
 // basic fixture
 func testPoint() *Point {
@@ -67,18 +74,20 @@ func TestPointWithNotes(t *testing.T) {
 	}
 }
 
-func TestSaveDelete(t *testing.T) {
+func TestSave(t *testing.T) {
 	session := config.Connect()
-	pointsCollection := session.DB("mapToGo").C("points")
-	defer session.Close()
+	pointsCollection := session.DB(databaseName).C(collectionName)
+
+	point := testPoint()
+	defer func() {
+		session.Close()
+		point.Delete()
+	}()
 
 	initCount, err := pointsCollection.Count()
 	if err != nil {
 		t.Error("Counting raised an error! ", err)
 	}
-
-	point := testPoint()
-
 	err = point.Save()
 	if err != nil {
 		t.Error("Saving raised an error! ", err)
@@ -92,6 +101,23 @@ func TestSaveDelete(t *testing.T) {
 	if initCount+1 != countAfterInsert {
 		t.Error("new point was not inserted! Count: ", countAfterInsert)
 	}
+}
+
+func TestDelete(t *testing.T) {
+	session := config.Connect()
+	pointsCollection := session.DB(databaseName).C(collectionName)
+	defer session.Close()
+
+	point := testPoint()
+	err := point.Save()
+	if err != nil {
+		t.Error("Saving raised an error! ", err)
+	}
+
+	countAfterInsert, err := pointsCollection.Count()
+	if err != nil {
+		t.Error("Counting raised an error! ", err)
+	}
 
 	err = point.Delete()
 	if err != nil {
@@ -104,7 +130,7 @@ func TestSaveDelete(t *testing.T) {
 	}
 
 	if countAfterInsert-1 != countAfterDelete {
-		t.Error("new point was not inserted! Count: ", countAfterDelete)
+		t.Error("new point was not deleted! Count: ", countAfterDelete)
 	}
 }
 

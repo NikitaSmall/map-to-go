@@ -6,6 +6,10 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+// configs for connection
+var databaseName = config.Env["dbName"]
+var collectionName = "points"
+
 // interface of generic geometrical object
 type Pointer interface {
 	Save() error
@@ -70,7 +74,7 @@ func GetPoint(pointId string) (*Point, error) {
 	session := config.Connect()
 	defer session.Close()
 
-	pointsCollection := session.DB("mapToGo").C("points")
+	pointsCollection := session.DB(databaseName).C(collectionName)
 
 	var point Point
 	err := pointsCollection.FindId(pointId).One(&point)
@@ -84,7 +88,7 @@ func GetPoints() (*Points, error) {
 	session := config.Connect()
 	defer session.Close()
 
-	pointsCollection := session.DB("mapToGo").C("points")
+	pointsCollection := session.DB(databaseName).C(collectionName)
 
 	var points Points
 	err := pointsCollection.Find(nil).All(&points)
@@ -99,7 +103,7 @@ func (point *Point) UpdateAddress() error {
 	session := config.Connect()
 	defer session.Close()
 
-	pointsCollection := session.DB("mapToGo").C("points")
+	pointsCollection := session.DB(databaseName).C(collectionName)
 
 	point.defineAddress(GoogleGeocoder)
 	return pointsCollection.Update(bson.M{"_id": point.Id}, bson.M{"$set": bson.M{"address": point.Address}})
@@ -110,7 +114,7 @@ func (point *Point) AddNote(note *note.Note) error {
 	session := config.Connect()
 	defer session.Close()
 
-	pointsCollection := session.DB("mapToGo").C("points")
+	pointsCollection := session.DB(databaseName).C(collectionName)
 
 	note.SanitizeContent()
 	return pointsCollection.Update(bson.M{"_id": point.Id}, bson.M{"$push": bson.M{"notes": note}})
@@ -121,7 +125,7 @@ func (point *Point) Delete() error {
 	session := config.Connect()
 	defer session.Close()
 
-	pointsCollection := session.DB("mapToGo").C("points")
+	pointsCollection := session.DB(databaseName).C(collectionName)
 
 	return pointsCollection.Remove(bson.M{"_id": point.Id})
 }
@@ -131,7 +135,7 @@ func (point *Point) Save() error {
 	session := config.Connect()
 	defer session.Close()
 
-	pointsCollection := session.DB("mapToGo").C("points")
+	pointsCollection := session.DB(databaseName).C(collectionName)
 
 	return pointsCollection.Insert(point)
 }

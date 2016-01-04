@@ -38,6 +38,10 @@ func (hub *Hub) isEmpty() bool {
 	return len(hub.clients) == 0
 }
 
+func (hub *Hub) count() int {
+	return len(hub.clients)
+}
+
 func (hub *Hub) SendMessage(action string, message interface{}) {
 	if hub.isEmpty() {
 		return

@@ -1,44 +1,10 @@
 package socket
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"net/http"
-	"net/http/httptest"
+	"github.com/nikitasmall/map-to-go/note"
 	"testing"
-	"time"
 )
-
-var TestHub = newHub()
-
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-}
-
-func newHubTestRouter() *gin.Engine {
-	testRouter := gin.Default()
-
-	go TestHub.Run()
-
-	testRouter.GET("/hub", func(c *gin.Context) {
-		ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-		if err != nil {
-			panic(err)
-			return
-		}
-
-		client := CreateClient(ws, "main")
-		TestHub.Register(client)
-		go client.ReadPump()
-		go client.WritePump()
-
-		time.Sleep(5 * time.Second)
-		c.JSON(http.StatusOK, gin.H{"ok": true})
-	})
-
-	return testRouter
-}
 
 func TestNewHub(t *testing.T) {
 	testHub := newHub()
@@ -48,21 +14,33 @@ func TestNewHub(t *testing.T) {
 }
 
 func TestNewClientRequest(t *testing.T) {
-	w := httptest.NewRecorder()
-	r, err := http.NewRequest("GET", "/hub", nil)
+	testClient := CreateClient(&websocket.Conn{}, "main")
+	testHub := newHub()
 
-	if err != nil {
-		t.Error("Cannot create new request! ", err.Error())
+	go testHub.Run()
+
+	testHub.Register(testClient)
+	if testHub.count() != 1 {
+		t.Error("Client was not registered!", testHub.count())
 	}
+}
 
-	testHubRouter := newHubTestRouter()
-	testHubRouter.ServeHTTP(w, r)
+func TestClientMessageRecieve(t *testing.T) {
+	testClient := CreateClient(&websocket.Conn{}, "main")
+	go testClient.ReadPump()
+	go testClient.WritePump()
+	note := note.CreateNote()
 
-	if w.Code != http.StatusOK {
-		t.Error("Response has unexpected status code! ", w.Code)
-	}
+	note.Note = "test"
 
-	if w.Body == nil {
-		t.Error("Response shouldn't return empty body! ", w.Body)
+	testHub := newHub()
+
+	go testHub.Run()
+	testHub.Register(testClient)
+
+	testHub.SendMessage(HintAdded, note)
+
+	if message := <-testClient.send; message != nil {
+		t.Error("message was not recieved by client! ", message)
 	}
 }

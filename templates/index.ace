@@ -9,11 +9,13 @@ html lang=en
     link rel="stylesheet" href="/public/css/animate.css"
 
     script src="http://code.jquery.com/jquery-2.1.4.min.js" type="text/javascript"
+    script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js" type="text/javascript"
     script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"
   body
     = include templates/navbar
     #map-container
       #map
 
+    = include templates/modals
     script src="/public/js/bootstrap-notify.min.js" type="text/javascript"
     script src="/public/js/main.js" type="text/javascript"

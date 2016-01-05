@@ -55,6 +55,17 @@ func (hub *Hub) SendMessage(action string, message interface{}) {
 	hub.broadcast <- obj
 }
 
+func (hub *Hub) broadcastMessage(m []byte) {
+	for c := range hub.clients {
+		select {
+		case c.send <- m:
+		default:
+			close(c.send)
+			delete(hub.clients, c)
+		}
+	}
+}
+
 func (hub *Hub) Run() {
 	for {
 		select {
@@ -67,14 +78,7 @@ func (hub *Hub) Run() {
 				return
 			}
 		case m := <-hub.broadcast:
-			for c := range hub.clients {
-				select {
-				case c.send <- m:
-				default:
-					close(c.send)
-					delete(hub.clients, c)
-				}
-			}
+			hub.broadcastMessage(m)
 		}
 	}
 }

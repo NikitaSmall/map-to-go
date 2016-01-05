@@ -34,6 +34,11 @@ func setupRoutes(router *gin.Engine) {
 	router.GET("/notes/:pointId", getNotesHandler)
 	router.POST("/notes", addNoteHandler)
 
+	router.GET("/user", checkUser)
+	router.POST("/register", register)
+	router.POST("/login", login)
+	router.DELETE("/logout", logout)
+
 	router.GET("/hub", hubHandler)
 	router.GET("/hub/:hubName", noteHubHandler)
 }

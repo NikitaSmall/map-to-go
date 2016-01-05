@@ -10,9 +10,16 @@
         | Map to Go
     .collapse.navbar-collapse#navbar-collapse
       ul.nav.navbar-nav
-        li.active
-          a href="#"
-            | Main map
         li
           a href="#"
             | About
+      ul.nav.navbar-nav.navbar-right
+        li
+          a#register href="#" data-toggle="modal" data-target="#modalRegister"
+            | Register
+        li
+          a#login href="#" data-toggle="modal" data-target="#modalLogin"
+            | Login
+        li
+          a#logout.hidden href="#"
+            | Logout

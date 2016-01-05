@@ -8,6 +8,12 @@ module.exports.setOptionsObjectManager = function(objectManager, balloonLayout, 
   objectManager.clusters.options.set('preset', 'islands#greenClusterIcons');
 }
 
+module.exports.toggleAuthButtons = function() {
+  $('#register').toggleClass('hidden');
+  $('#login').toggleClass('hidden');
+  $('#logout').toggleClass('hidden');
+}
+
 module.exports.getCurrentUrl = function() {
   var docUrl = document.URL;
   var url;

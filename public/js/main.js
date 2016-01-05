@@ -213,6 +213,124 @@ ymaps.ready(function() {
 
   var conn;
 
+  $.ajax({
+    method: 'GET',
+    url: '/user',
+    contentType: "application/json; charset=utf-8"
+  }).done(function(data) {
+    if (data.username != null) {
+      config.toggleAuthButtons();
+
+      socket.createNotify(
+        "Welcome back!",
+        data.username + ", we a glad to see you!",
+        "info"
+      );
+    }
+  }).fail(function(data, textStatus, errorThrown) {
+    socket.createNotify(
+      "Error occurred on the server!",
+      data.responseJSON.message,
+      "danger"
+    );
+  });
+
+  $('#logout').click(function(e) {
+    e.preventDefault();
+
+    $.ajax({
+      method: 'DELETE',
+      url: '/logout',
+      contentType: "application/json; charset=utf-8"
+    }).done(function(data) {
+      if (data.message.length > 0) {
+        config.toggleAuthButtons();
+
+        socket.createNotify(
+          "Farewell!",
+          data.message,
+          "warning"
+        );
+      }
+    }).fail(function(data, textStatus, errorThrown) {
+      socket.createNotify(
+        "Error occurred on the server!",
+        data.responseJSON.message,
+        "danger"
+      );
+    });
+  })
+
+  $("#loginForm").unbind("submit");
+  $('#loginForm').submit(function(e) {
+    var me = $(this);
+    e.preventDefault();
+
+    var username = $('#usernameLogin').val();
+    var password = $('#passwordLogin').val();
+
+    $.ajax({
+      method: 'POST',
+      url: '/login',
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({ "username": username, "password": password }),
+      complete: function() {
+            me.data('requestRunning', false);
+        }
+    }).done(function(data) {
+      socket.createNotify(
+        "Login successfull:",
+        data.message,
+        "info"
+      );
+      config.toggleAuthButtons();
+      $('#modalLogin').modal('hide');
+    }).fail(function(data, textStatus, errorThrown) {
+      socket.createNotify(
+        "Error:",
+        data.responseJSON.message,
+        "danger"
+      );
+      $('#modalLogin').modal('hide');
+    });
+  });
+
+  $("#registerForm").unbind("submit");
+  $('#registerForm').submit(function(e) {
+    var me = $(this);
+    e.preventDefault();
+
+    var username = $('#usernameRegister').val();
+    var password = $('#passwordRegister').val();
+
+    $.ajax({
+      method: 'POST',
+      url: '/register',
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({ "username": username, "password": password }),
+      complete: function() {
+            me.data('requestRunning', false);
+        }
+    }).done(function(data) {
+      socket.createNotify(
+        "Registration complete:",
+        data.message,
+        "info"
+      );
+      config.toggleAuthButtons();
+      $('#modalRegister').modal('hide');
+    }).fail(function(data, textStatus, errorThrown) {
+      $('#modalLogin').modal('hide');
+      socket.createNotify(
+        "Error:",
+        data.responseJSON.message,
+        "danger"
+      );
+    });
+  });
+
+
+
   var map = new ymaps.Map('map', {
     // [latitude, longitude]
     center: [46.23, 30.47],
@@ -357,6 +475,12 @@ module.exports.setOptionsObjectManager = function(objectManager, balloonLayout, 
   objectManager.objects.options.set('balloonPanelMaxMapArea', 0);
   objectManager.objects.options.set('preset', 'islands#greenDotIcon');
   objectManager.clusters.options.set('preset', 'islands#greenClusterIcons');
+}
+
+module.exports.toggleAuthButtons = function() {
+  $('#register').toggleClass('hidden');
+  $('#login').toggleClass('hidden');
+  $('#logout').toggleClass('hidden');
 }
 
 module.exports.getCurrentUrl = function() {

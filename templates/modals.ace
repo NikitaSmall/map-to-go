@@ -1,0 +1,50 @@
+div.modal.fade#modalRegister tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+  div.modal-dialog
+    div.modal-content
+      div.modal-header
+        button.close type="button" data-dismiss="modal"
+          span aria-hidden="true"
+            | &times;
+          span.sr-only
+            | Close
+        h4.modal-title#modalRegisterLabel
+          | Register
+
+      div.modal-body
+        form#registerForm role="form"
+          div.form-group
+            label for="usernameRegister"
+              | Username
+            input.form-control#usernameRegister type="text" placeholder="Enter username" autocomplete="off" minlength="2" maxlength="24" required="true"
+          div.form-group
+            label for="passwordRegister"
+              | Password
+            input.form-control#passwordRegister type="password" placeholder="Password" autocomplete="off" required="true" minlength="5"
+
+          input.btn.btn-primary type="submit" value="Submit"
+
+
+div.modal.fade#modalLogin tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+  div.modal-dialog
+    div.modal-content
+      div.modal-header
+        button.close type="button" data-dismiss="modal"
+          span aria-hidden="true"
+            | &times;
+          span.sr-only
+            | Close
+        h4.modal-title#modalRegisterLabel
+          | Register
+
+      div.modal-body
+        form#loginForm role="form"
+          div.form-group
+            label for="usernameLogin"
+              | Username
+            input.form-control#usernameLogin type="text" placeholder="Enter username" autocomplete="off" minlength="2" maxlength="24" required="true"
+          div.form-group
+            label for="passwordLogin"
+              | Password
+            input.form-control#passwordLogin type="password" placeholder="Password" autocomplete="off" required="true" minlength="5"
+
+          input.btn.btn-primary type="submit" value="Submit"

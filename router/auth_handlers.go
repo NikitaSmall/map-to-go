@@ -9,8 +9,11 @@ import (
 	"net/http"
 )
 
+// local storage for session
 var localStorage = sessions.NewCookieStore([]byte("secret"))
 
+// helper function that hides all the operations with session
+// and only saves username to session
 func setSessionUser(username string, c *gin.Context) {
 	session, err := localStorage.Get(c.Request, "auth")
 	if err != nil {
@@ -24,6 +27,9 @@ func setSessionUser(username string, c *gin.Context) {
 	}
 }
 
+// helper function that hides all the operations with session
+// and only returns username from session.
+// also returns error if the username is not set in session
 func getSessionUser(c *gin.Context) (string, error) {
 	session, err := localStorage.Get(c.Request, "auth")
 	if err != nil {
@@ -46,6 +52,8 @@ func bindUser(user *user.User, c *gin.Context) {
 	}
 }
 
+// function that returns a name if user is set in session,
+// returns nil otherwise
 func checkUser(c *gin.Context) {
 	username, err := getSessionUser(c)
 
@@ -56,6 +64,9 @@ func checkUser(c *gin.Context) {
 	}
 }
 
+// handler function that makes attempt to register provided user
+// set session for username in case of success
+// and returns error with description if failed
 func register(c *gin.Context) {
 	u := user.CreateUser()
 	bindUser(u, c)
@@ -69,6 +80,9 @@ func register(c *gin.Context) {
 	}
 }
 
+// handler function that makes attempt to login provided user
+// set session for username in case of success
+// and returns error with description if failed
 func login(c *gin.Context) {
 	u := user.CreateUser()
 	bindUser(u, c)
@@ -82,6 +96,7 @@ func login(c *gin.Context) {
 	}
 }
 
+// handler function that remove user's session from local storage
 func logout(c *gin.Context) {
 	session, err := localStorage.Get(c.Request, "auth")
 	if err != nil {

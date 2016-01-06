@@ -15,6 +15,8 @@ func bindNote(note *note.Note, c *gin.Context) {
 	if err != nil {
 		log.Panic("Error on note binding from json. ", err.Error())
 	}
+
+	note.Author, _ = getSessionUser(c)
 }
 
 func addNoteHandler(c *gin.Context) {

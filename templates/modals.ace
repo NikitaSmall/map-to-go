@@ -48,3 +48,26 @@ div.modal.fade#modalLogin tabindex="-1" role="dialog" aria-labelledby="myModalLa
             input.form-control#passwordLogin type="password" placeholder="Password" autocomplete="off" required="true" minlength="5"
 
           input.btn.btn-primary type="submit" value="Submit"
+
+div#aboutModal.modal.fade
+  div.modal-dialog
+
+    div.modal-content
+      div.modal-header
+        button.close type="button" data-dismiss="modal"
+          | &times;
+        h4.modal-title
+          | About
+      div.modal-body
+        p
+          | This is a simple study project written in Go. 
+          | On this map you can create points, leave comments and notes on them. 
+          | Points also can set their own address via google API (and geocoging).
+        p
+          | If your browser supports websockets you will be able to communicate with other users in realtime. 
+          | You may use this service like a kind of a geographical chating rooms.
+        p
+          | Thank you for attention! Created by NikitaSmall.
+      div.modal-footer
+        button.btn.btn-default type="button" data-dismiss="modal"
+          | Close

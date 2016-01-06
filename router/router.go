@@ -24,6 +24,7 @@ func Router() *gin.Engine {
 // function setups routes to be handled
 func setupRoutes(router *gin.Engine) {
 	router.GET("/", indexHandler)
+	router.NoRoute(notFoundHandler)
 
 	router.GET("/points", getPointsHandler)
 	router.POST("/points", addPointHandler)

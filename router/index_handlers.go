@@ -11,3 +11,7 @@ import (
 func indexHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, config.TemplateFullPath("templates/", "index"), nil)
 }
+
+func notFoundHandler(c *gin.Context) {
+	c.Redirect(http.StatusMovedPermanently, "/")
+}

@@ -1,7 +1,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var socket = require('./socket.js');
 var config = require('./settings.js');
-var connection;
+var connection = socket.connection;
 
 module.exports.ContentLayout = ymaps.templateLayoutFactory.createClass(
   '<div class="panel-footer">' +
@@ -37,6 +37,8 @@ var insertMessage = function(data) {
   }
 };
 
+module.exports.insertMessage = insertMessage;
+
 module.exports.Layout = ymaps.templateLayoutFactory.createClass(
   '<div class="panel panel-primary">' +
     '$[[options.contentLayout]]' +
@@ -52,29 +54,13 @@ module.exports.Layout = ymaps.templateLayoutFactory.createClass(
     this.constructor.superclass.build.call(this);
     var pointId = this._data.object.id;
     $('#point-id').val(pointId);
-    console.log("ws://" + config.getCurrentUrl() + "/hub/" + pointId);
-    connection = new WebSocket("ws://" + config.getCurrentUrl() + "/hub/" + pointId);
 
-    connection.onopen = function(e) {
-      socket.createNotify(
-        "You opened balloon!",
-        "Socket connection to server was successfully established!",
-        "info"
-      );
-    }
-
-    connection.onmessage = function(e) {
-      var message = JSON.parse(e.data);
-      insertMessage(message.message)
-    }
-
-    connection.onclose = function(e) {
-      socket.createNotify(
-        "Balloon was closed!",
-        "You close it or someone deletes this point!",
-        "warning"
-      );
-    }
+    connection.send(pointId);
+    socket.createNotify(
+      "You opened balloon!",
+      "Socket connection to server was successfully established!",
+      "info"
+    );
 
     this._$element = $('.panel', this.getParentElement());
     this.applyElementOffset();
@@ -122,7 +108,13 @@ module.exports.Layout = ymaps.templateLayoutFactory.createClass(
    * @name clear
    */
   clear: function () {
-    connection.close();
+    connection.send("main");
+
+    socket.createNotify(
+      "Balloon was closed!",
+      "You close it or someone deletes this point!",
+      "warning"
+    );
 
     $('#note-form').unbind('submit', this.onNoteFormSubmit);
     this._$element.find('.close').off('click');
@@ -211,7 +203,7 @@ ymaps.ready(function() {
   var config = require('./settings.js');
   var socket = require('./socket.js');
 
-  var conn;
+  var conn = socket.connection;
 
   $.ajax({
     method: 'GET',
@@ -427,42 +419,42 @@ ymaps.ready(function() {
     }
   });
 
-  if (window["WebSocket"]) {
-    conn = new WebSocket("ws://" + config.getCurrentUrl() + "/hub");
-
-    conn.onopen = function(e) {
-      socket.createNotify(
-        "Welcome!",
-        "Socket connection to server was successfully established!",
-        "info"
-      );
-    }
-
-    conn.onmessage = function(e) {
-      var message = JSON.parse(e.data);
-
-      switch (message.action) {
-        case "point_add":
-          socket.PointAdd(objectManager, message.message)
-          break;
-        case "point_remove":
-          socket.PointRemove(objectManager, message.message)
-          break;
-        case "hint_added":
-          socket.HintAdd(objectManager, message.message)
-          break;
-      }
-    }
-
-    conn.onclose = function(e) {
-      socket.createNotify(
-        "Something happened!",
-        "Socket connection was closed!",
-        "danger"
-      );
-    }
-
+  conn.onopen = function(e) {
+    socket.createNotify(
+      "Welcome!",
+      "Socket connection to server was successfully established!",
+      "info"
+    );
   }
+
+  conn.onmessage = function(e) {
+    var message = JSON.parse(e.data);
+
+    switch (message.action) {
+      case "point_add":
+        socket.PointAdd(objectManager, message.message)
+        break;
+      case "point_remove":
+        socket.PointRemove(objectManager, message.message)
+        break;
+      case "hint_added":
+        socket.HintAdd(objectManager, message.message)
+        break;
+      case "note_added":
+        balloonLayout.insertMessage(message.message);
+        break;
+    }
+  }
+
+  conn.onclose = function(e) {
+    socket.createNotify(
+      "Something happened!",
+      "Socket connection was closed!",
+      "danger"
+    );
+  }
+
+
 
 });
 
@@ -499,6 +491,10 @@ module.exports.getCurrentUrl = function() {
 }
 
 },{}],4:[function(require,module,exports){
+var config = require('./settings.js');
+
+module.exports.connection = new WebSocket("ws://" + config.getCurrentUrl() + "/hub");
+
 var createNotify = function(title, text, type) {
   $.notify({
     title: "<strong>" + title + "</strong> ",
@@ -564,4 +560,4 @@ module.exports.balloonMessage = function(message, author, createdAt, messageId) 
         '</li>'
 }
 
-},{}]},{},[2]);
+},{"./settings.js":3}]},{},[2]);

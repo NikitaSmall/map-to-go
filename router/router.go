@@ -17,7 +17,6 @@ func Router() *gin.Engine {
 	setupRoutes(router)
 
 	go socket.MainHub.Run()
-	go socket.HubManager.ManageNoteHub()
 
 	return router
 }
@@ -40,5 +39,4 @@ func setupRoutes(router *gin.Engine) {
 	router.DELETE("/logout", logout)
 
 	router.GET("/hub", hubHandler)
-	router.GET("/hub/:hubName", noteHubHandler)
 }

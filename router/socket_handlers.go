@@ -26,18 +26,3 @@ func hubHandler(c *gin.Context) {
 	go client.ReadPump()
 	client.WritePump()
 }
-
-func noteHubHandler(c *gin.Context) {
-	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-	if err != nil {
-		panic(err)
-		return
-	}
-
-	hubName := c.Param("hubName")
-
-	client := socket.CreateClient(ws, hubName)
-	socket.NoteHubRegister(client)
-	go client.ReadPump()
-	client.WritePump()
-}

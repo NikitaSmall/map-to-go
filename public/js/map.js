@@ -5,7 +5,7 @@ ymaps.ready(function() {
   var config = require('./settings.js');
   var socket = require('./socket.js');
 
-  var conn;
+  var conn = socket.connection;
 
   $.ajax({
     method: 'GET',
@@ -221,41 +221,41 @@ ymaps.ready(function() {
     }
   });
 
-  if (window["WebSocket"]) {
-    conn = new WebSocket("ws://" + config.getCurrentUrl() + "/hub");
-
-    conn.onopen = function(e) {
-      socket.createNotify(
-        "Welcome!",
-        "Socket connection to server was successfully established!",
-        "info"
-      );
-    }
-
-    conn.onmessage = function(e) {
-      var message = JSON.parse(e.data);
-
-      switch (message.action) {
-        case "point_add":
-          socket.PointAdd(objectManager, message.message)
-          break;
-        case "point_remove":
-          socket.PointRemove(objectManager, message.message)
-          break;
-        case "hint_added":
-          socket.HintAdd(objectManager, message.message)
-          break;
-      }
-    }
-
-    conn.onclose = function(e) {
-      socket.createNotify(
-        "Something happened!",
-        "Socket connection was closed!",
-        "danger"
-      );
-    }
-
+  conn.onopen = function(e) {
+    socket.createNotify(
+      "Welcome!",
+      "Socket connection to server was successfully established!",
+      "info"
+    );
   }
+
+  conn.onmessage = function(e) {
+    var message = JSON.parse(e.data);
+
+    switch (message.action) {
+      case "point_add":
+        socket.PointAdd(objectManager, message.message)
+        break;
+      case "point_remove":
+        socket.PointRemove(objectManager, message.message)
+        break;
+      case "hint_added":
+        socket.HintAdd(objectManager, message.message)
+        break;
+      case "note_added":
+        balloonLayout.insertMessage(message.message);
+        break;
+    }
+  }
+
+  conn.onclose = function(e) {
+    socket.createNotify(
+      "Something happened!",
+      "Socket connection was closed!",
+      "danger"
+    );
+  }
+
+
 
 });

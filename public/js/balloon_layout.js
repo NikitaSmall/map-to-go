@@ -1,6 +1,6 @@
 var socket = require('./socket.js');
 var config = require('./settings.js');
-var connection;
+var connection = socket.connection;
 
 module.exports.ContentLayout = ymaps.templateLayoutFactory.createClass(
   '<div class="panel-footer">' +
@@ -36,6 +36,8 @@ var insertMessage = function(data) {
   }
 };
 
+module.exports.insertMessage = insertMessage;
+
 module.exports.Layout = ymaps.templateLayoutFactory.createClass(
   '<div class="panel panel-primary">' +
     '$[[options.contentLayout]]' +
@@ -51,29 +53,13 @@ module.exports.Layout = ymaps.templateLayoutFactory.createClass(
     this.constructor.superclass.build.call(this);
     var pointId = this._data.object.id;
     $('#point-id').val(pointId);
-    console.log("ws://" + config.getCurrentUrl() + "/hub/" + pointId);
-    connection = new WebSocket("ws://" + config.getCurrentUrl() + "/hub/" + pointId);
 
-    connection.onopen = function(e) {
-      socket.createNotify(
-        "You opened balloon!",
-        "Socket connection to server was successfully established!",
-        "info"
-      );
-    }
-
-    connection.onmessage = function(e) {
-      var message = JSON.parse(e.data);
-      insertMessage(message.message)
-    }
-
-    connection.onclose = function(e) {
-      socket.createNotify(
-        "Balloon was closed!",
-        "You close it or someone deletes this point!",
-        "warning"
-      );
-    }
+    connection.send(pointId);
+    socket.createNotify(
+      "You opened balloon!",
+      "Socket connection to server was successfully established!",
+      "info"
+    );
 
     this._$element = $('.panel', this.getParentElement());
     this.applyElementOffset();
@@ -121,7 +107,13 @@ module.exports.Layout = ymaps.templateLayoutFactory.createClass(
    * @name clear
    */
   clear: function () {
-    connection.close();
+    connection.send("main");
+
+    socket.createNotify(
+      "Balloon was closed!",
+      "You close it or someone deletes this point!",
+      "warning"
+    );
 
     $('#note-form').unbind('submit', this.onNoteFormSubmit);
     this._$element.find('.close').off('click');

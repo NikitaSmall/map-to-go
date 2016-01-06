@@ -1,3 +1,7 @@
+var config = require('./settings.js');
+
+module.exports.connection = new WebSocket("ws://" + config.getCurrentUrl() + "/hub");
+
 var createNotify = function(title, text, type) {
   $.notify({
     title: "<strong>" + title + "</strong> ",

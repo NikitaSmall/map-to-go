@@ -2,6 +2,7 @@ package socket
 
 import (
 	"github.com/gorilla/websocket"
+	"log"
 	"time"
 )
 
@@ -18,34 +19,28 @@ const (
 
 // generic base client for websocket communication
 type Client struct {
-	clientFor string
-	ws        *websocket.Conn
-	send      chan []byte
+	GroupId string
+	ws      *websocket.Conn
+	send    chan []byte
 }
 
-// function creates a client
-func CreateClient(ws *websocket.Conn, clientFor string) *Client {
+// function creates a client for special group
+func CreateClient(ws *websocket.Conn, groupId string) *Client {
 	return &Client{
-		clientFor: clientFor,
-		ws:        ws,
-		send:      make(chan []byte, 256),
+		GroupId: groupId,
+		ws:      ws,
+		send:    make(chan []byte, 256),
 	}
 }
 
 // function removes a client from the hub
 func (c *Client) removeClient() {
-	if c.clientFor == "main" {
-		MainHub.unregister <- c
-	} else {
-		NoteHub[c.clientFor].unregister <- c
-	}
+	MainHub.unregister <- c
 
 	c.ws.Close()
 }
 
 // function reads info from client's socket
-// we will not get any message from it,
-// we don't listen to it
 func (c *Client) ReadPump() {
 	defer c.removeClient()
 
@@ -56,11 +51,16 @@ func (c *Client) ReadPump() {
 		return nil
 	})
 
+	// listen for socket
 	for {
-		_, _, err := c.ws.ReadMessage()
+		_, message, err := c.ws.ReadMessage()
 		if err != nil {
+			log.Print(err.Error())
 			break
 		}
+
+		// set client to some group
+		c.GroupId = string(message)
 	}
 }
 
@@ -79,6 +79,7 @@ func (c *Client) WritePump() {
 		c.ws.Close()
 	}()
 
+	// write to socket
 	for {
 		select {
 		case message, ok := <-c.send:

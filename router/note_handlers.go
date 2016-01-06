@@ -19,6 +19,9 @@ func bindNote(note *note.Note, c *gin.Context) {
 	note.Author, _ = getSessionUser(c)
 }
 
+// handler function makes attempt to create a new note
+// and add it to point
+// if successfull, send note to all clients in the group (in point)
 func addNoteHandler(c *gin.Context) {
 	note := note.CreateNote()
 	bindNote(note, c)
@@ -33,7 +36,7 @@ func addNoteHandler(c *gin.Context) {
 		log.Print("Error processing of saving note to point: ", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 	} else {
-		socket.NoteHub[note.PointId].SendMessage(socket.NoteAdded, note)
+		socket.MainHub.SendMessageToGroup(socket.NoteAdded, note, point.Id)
 		c.JSON(http.StatusOK, note)
 	}
 }

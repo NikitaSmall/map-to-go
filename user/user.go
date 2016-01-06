@@ -1,7 +1,6 @@
 package user
 
 import (
-	//"bytes"
 	"crypto/md5"
 	"errors"
 	"github.com/nikitasmall/map-to-go/config"
@@ -35,7 +34,6 @@ func CreateUser() *User {
 
 func (user *User) Register() error {
 	if user.hasSameUsername() {
-		log.Print("Try to register with existing username: ", user.Username)
 		return errors.New("This username already taken. Choose another one.")
 	}
 
@@ -71,11 +69,7 @@ func (user *User) CheckUser() error {
 		return err
 	}
 
-	if u.Username == user.Username {
-		return nil
-	} else {
-		return errors.New("Cannot identify user!")
-	}
+	return nil
 }
 
 func (user *User) hasSameUsername() bool {
@@ -95,6 +89,5 @@ func (user *User) hasSameUsername() bool {
 
 func (user *User) encryptPassword() {
 	checksum := md5.Sum([]byte(user.Password))
-	//n := bytes.IndexByte(checksum[:], 0)
 	user.Password = string(checksum[:])
 }

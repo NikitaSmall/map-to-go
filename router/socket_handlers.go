@@ -1,8 +1,8 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
+	"github.com/nikitasmall/map-to-go/Godeps/_workspace/src/github.com/gin-gonic/gin"
+	"github.com/nikitasmall/map-to-go/Godeps/_workspace/src/github.com/gorilla/websocket"
 	"github.com/nikitasmall/map-to-go/socket"
 )
 

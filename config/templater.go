@@ -1,8 +1,8 @@
 package config
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/yosssi/ace"
+	"github.com/nikitasmall/map-to-go/Godeps/_workspace/src/github.com/gin-gonic/gin"
+	"github.com/nikitasmall/map-to-go/Godeps/_workspace/src/github.com/yosssi/ace"
 	"html/template"
 	"log"
 )

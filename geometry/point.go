@@ -1,9 +1,9 @@
 package geometry
 
 import (
+	"github.com/nikitasmall/map-to-go/Godeps/_workspace/src/gopkg.in/mgo.v2/bson"
 	"github.com/nikitasmall/map-to-go/config"
 	"github.com/nikitasmall/map-to-go/note"
-	"gopkg.in/mgo.v2/bson"
 )
 
 // configs for connection

@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/vrischmann/envconfig"
+	"github.com/nikitasmall/map-to-go/Godeps/_workspace/src/github.com/vrischmann/envconfig"
 	"log"
 )
 

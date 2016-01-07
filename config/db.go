@@ -1,7 +1,7 @@
 package config
 
 import (
-	"gopkg.in/mgo.v2"
+	"github.com/nikitasmall/map-to-go/Godeps/_workspace/src/gopkg.in/mgo.v2"
 	"log"
 )
 

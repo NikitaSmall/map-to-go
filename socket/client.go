@@ -1,7 +1,7 @@
 package socket
 
 import (
-	"github.com/gorilla/websocket"
+	"github.com/nikitasmall/map-to-go/Godeps/_workspace/src/github.com/gorilla/websocket"
 	"log"
 	"time"
 )

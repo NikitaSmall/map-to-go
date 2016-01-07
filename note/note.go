@@ -1,7 +1,7 @@
 package note
 
 import (
-	"gopkg.in/mgo.v2/bson"
+	"github.com/nikitasmall/map-to-go/Godeps/_workspace/src/gopkg.in/mgo.v2/bson"
 	"time"
 )
 

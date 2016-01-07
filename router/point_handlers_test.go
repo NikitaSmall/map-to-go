@@ -3,10 +3,10 @@ package router
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/gin-gonic/gin"
+	"github.com/nikitasmall/map-to-go/Godeps/_workspace/src/github.com/gin-gonic/gin"
+	"github.com/nikitasmall/map-to-go/Godeps/_workspace/src/gopkg.in/mgo.v2"
 	"github.com/nikitasmall/map-to-go/config"
 	"github.com/nikitasmall/map-to-go/geometry"
-	"gopkg.in/mgo.v2"
 	"net/http"
 	"net/http/httptest"
 	"testing"

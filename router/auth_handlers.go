@@ -2,8 +2,8 @@ package router
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/sessions"
+	"github.com/nikitasmall/map-to-go/Godeps/_workspace/src/github.com/gin-gonic/gin"
+	"github.com/nikitasmall/map-to-go/Godeps/_workspace/src/github.com/gorilla/sessions"
 	"github.com/nikitasmall/map-to-go/config"
 	"github.com/nikitasmall/map-to-go/user"
 	"log"

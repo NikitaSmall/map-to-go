@@ -1,9 +1,9 @@
 package geometry
 
 import (
-	"github.com/codingsince1985/geo-golang"
-	"github.com/codingsince1985/geo-golang/google"
-	"github.com/codingsince1985/geo-golang/mapquest/nominatim"
+	"github.com/nikitasmall/map-to-go/Godeps/_workspace/src/github.com/codingsince1985/geo-golang"
+	"github.com/nikitasmall/map-to-go/Godeps/_workspace/src/github.com/codingsince1985/geo-golang/google"
+	"github.com/nikitasmall/map-to-go/Godeps/_workspace/src/github.com/codingsince1985/geo-golang/mapquest/nominatim"
 	"log"
 )
 

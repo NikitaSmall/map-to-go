@@ -3,8 +3,8 @@ package user
 import (
 	"crypto/md5"
 	"errors"
+	"github.com/nikitasmall/map-to-go/Godeps/_workspace/src/gopkg.in/mgo.v2/bson"
 	"github.com/nikitasmall/map-to-go/config"
-	"gopkg.in/mgo.v2/bson"
 	"log"
 )
 

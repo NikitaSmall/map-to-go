@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/nikitasmall/map-to-go/Godeps/_workspace/src/github.com/gin-gonic/gin"
 	"github.com/nikitasmall/map-to-go/geometry"
 	"github.com/nikitasmall/map-to-go/note"
 	"github.com/nikitasmall/map-to-go/socket"

@@ -9,8 +9,13 @@ var conf struct {
 	Mongolab struct {
 		Uri string `envconfig:"default=localhost:27017"`
 	}
-	Port   string `envconfig:"default=3000"`
-	DBName string `envconfig:"default=mapToGo"`
+	Port    string `envconfig:"default=3000"`
+	DBName  string `envconfig:"default=mapToGo"`
+	Session struct {
+		Authentication struct {
+			Key string `envconfig:"default=secret"`
+		}
+	}
 }
 
 // initialize config and turns it to map
@@ -24,6 +29,7 @@ func initializeConfig() map[string]string {
 		"connectionUrl": conf.Mongolab.Uri,
 		"port":          conf.Port,
 		"dbName":        conf.DBName,
+		"sessionKey":    conf.Session.Authentication.Key,
 	}
 }
 

@@ -4,13 +4,14 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
+	"github.com/nikitasmall/map-to-go/config"
 	"github.com/nikitasmall/map-to-go/user"
 	"log"
 	"net/http"
 )
 
 // local storage for session
-var localStorage = sessions.NewCookieStore([]byte("secret"))
+var localStorage = sessions.NewCookieStore([]byte(config.Env["sessionKey"]))
 
 // helper function that hides all the operations with session
 // and only saves username to session

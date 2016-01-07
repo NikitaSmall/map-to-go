@@ -493,7 +493,7 @@ module.exports.getCurrentUrl = function() {
 },{}],4:[function(require,module,exports){
 var config = require('./settings.js');
 
-module.exports.connection = new WebSocket("ws://" + config.getCurrentUrl() + "/hub");
+module.exports.connection = new WebSocket("wss://" + config.getCurrentUrl() + "/hub");
 
 var createNotify = function(title, text, type) {
   $.notify({

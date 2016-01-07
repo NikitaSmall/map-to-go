@@ -481,8 +481,8 @@ module.exports.connectionType = function() {
 
   if (docUrl.indexOf('http://') > -1) {
     connectionType = 'ws://';
-  } else if (docUrl.indexOf('wss://') > -1) {
-    connectionType = docUrl.substring(8, docUrl.length - 1);
+  } else if (docUrl.indexOf('https://') > -1) {
+    connectionType = 'wss://';
   } else {
     connectionType = 'ws://';
   }

@@ -475,6 +475,21 @@ module.exports.toggleAuthButtons = function() {
   $('#logout').toggleClass('hidden');
 }
 
+module.exports.connectionType = function() {
+  var docUrl = document.URL;
+  var url;
+
+  if (docUrl.indexOf('http://') > -1) {
+    connectionType = 'ws://';
+  } else if (docUrl.indexOf('wss://') > -1) {
+    connectionType = docUrl.substring(8, docUrl.length - 1);
+  } else {
+    connectionType = 'ws://';
+  }
+
+  return connectionType;
+}
+
 module.exports.getCurrentUrl = function() {
   var docUrl = document.URL;
   var url;
@@ -493,7 +508,7 @@ module.exports.getCurrentUrl = function() {
 },{}],4:[function(require,module,exports){
 var config = require('./settings.js');
 
-module.exports.connection = new WebSocket("wss://" + config.getCurrentUrl() + "/hub");
+module.exports.connection = new WebSocket(config.connectionType() + config.getCurrentUrl() + "/hub");
 
 var createNotify = function(title, text, type) {
   $.notify({

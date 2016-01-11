@@ -123,12 +123,32 @@ ymaps.ready(function() {
     });
   });
 
-
-
   var map = new ymaps.Map('map', {
     // [latitude, longitude]
     center: [46.23, 30.47],
     zoom: 10
+  });
+
+  var markerElement = jQuery('#marker');
+  var dragger = new ymaps.util.Dragger({
+    // Драггер будет автоматически запускаться при нажатии на элемент 'marker'.
+    autoStartElement: markerElement[0]
+  });
+  var markerOffset;
+  var markerPosition;
+
+  var searchCircle = new ymaps.Circle([
+    // Координаты центра круга.
+    [55.76, 37.60],
+    // Радиус круга в метрах.
+    10000
+  ], {
+    hintContent: "Search area. Move pin to search in another place. Right click it to stop searching."
+  }, {
+      fillColor: "#DB709344",
+      strokeColor: "#990066",
+      strokeOpacity: 0.2,
+      strokeWidth: 2
   });
 
   var objectManager = new ymaps.ObjectManager({
@@ -220,6 +240,100 @@ ymaps.ready(function() {
       });
     }
   });
+
+  searchCircle.events.add('contextmenu', function(event) {
+    if (map.geoObjects.indexOf(objectManager) == -1) {
+      map.geoObjects.add(objectManager);
+    }
+
+    map.geoObjects.remove(searchCircle);
+  });
+
+  dragger.events
+    .add('start', onDraggerStart)
+    .add('move', onDraggerMove)
+    .add('stop', onDraggerEnd);
+
+  function onDraggerStart(event) {
+    map.geoObjects.remove(searchCircle);
+
+    var offset = markerElement.offset(),
+      position = event.get('position');
+    // Сохраняем смещение маркера относительно точки начала драга.
+    markerOffset = [
+      position[0] - offset.left,
+      position[1] - offset.top
+    ];
+    markerPosition = [
+      position[0] - markerOffset[0],
+      position[1] - markerOffset[1]
+    ];
+
+    applyMarkerPosition();
+  }
+
+  function onDraggerMove(event) {
+    applyDelta(event);
+  }
+
+  function onDraggerEnd(event) {
+    applyDelta(event);
+    markerPosition[0] += markerOffset[0];
+    markerPosition[1] += markerOffset[1];
+    // Переводим координаты страницы в глобальные пиксельные координаты.
+    var markerGlobalPosition = map.converter.pageToGlobal(markerPosition),
+      // Получаем центр карты в глобальных пиксельных координатах.
+      mapGlobalPixelCenter = map.getGlobalPixelCenter(),
+      // Получением размер контейнера карты на странице.
+      mapContainerSize = map.container.getSize(),
+      mapContainerHalfSize = [mapContainerSize[0] / 2, mapContainerSize[1] / 2],
+      // Вычисляем границы карты в глобальных пиксельных координатах.
+      mapGlobalPixelBounds = [
+        [mapGlobalPixelCenter[0] - mapContainerHalfSize[0], mapGlobalPixelCenter[1] - mapContainerHalfSize[1]],
+        [mapGlobalPixelCenter[0] + mapContainerHalfSize[0], mapGlobalPixelCenter[1] + mapContainerHalfSize[1]]
+      ];
+    // Проверяем, что завершение работы драггера произошло в видимой области карты.
+    if (containsPoint(mapGlobalPixelBounds, markerGlobalPosition)) {
+      // Теперь переводим глобальные пиксельные координаты в геокоординаты с учетом текущего уровня масштабирования карты.
+      var geoPosition = map.options.get('projection').fromGlobalPixels(markerGlobalPosition, map.getZoom());
+      console.log(geoPosition.join(' '));
+      searchCircle.geometry.setCoordinates(geoPosition);
+      if (map.geoObjects.indexOf(searchCircle) == -1) {
+        map.geoObjects.add(searchCircle);
+      }
+
+      map.geoObjects.remove(objectManager);
+    } else {
+      if (map.geoObjects.indexOf(objectManager) == -1) {
+        map.geoObjects.add(objectManager);
+      }
+
+      map.geoObjects.remove(searchCircle);
+    }
+
+    $('#marker').css('top', '5px');
+    $('#marker').css('left', '20px');
+  }
+
+  function applyDelta (event) {
+    // Поле 'delta' содержит разницу между положениями текущего и предыдущего события драггера.
+    var delta = event.get('delta');
+    markerPosition[0] += delta[0];
+    markerPosition[1] += delta[1];
+    applyMarkerPosition();
+  }
+
+  function applyMarkerPosition () {
+    markerElement.css({
+        left: markerPosition[0],
+        top: markerPosition[1]
+    });
+  }
+
+  function containsPoint (bounds, point) {
+    return point[0] >= bounds[0][0] && point[0] <= bounds[1][0] &&
+           point[1] >= bounds[0][1] && point[1] <= bounds[1][1];
+  }
 
   conn.onopen = function(e) {
     socket.createNotify(

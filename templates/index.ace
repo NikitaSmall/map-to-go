@@ -15,6 +15,7 @@ html lang=en
     = include templates/navbar
     #map-container
       #map
+      #marker
 
     = include templates/modals
     script src="/public/js/bootstrap-notify.min.js" type="text/javascript"

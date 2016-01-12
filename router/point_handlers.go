@@ -33,6 +33,7 @@ func getPointsHandler(c *gin.Context) {
 func addPointHandler(c *gin.Context) {
 	point := geometry.CreatePoint()
 	bindPoint(point, c)
+	log.Print(point)
 
 	err := point.Save()
 	if err != nil {

@@ -55,9 +55,15 @@ type Properties struct {
 type Point struct {
 	Id string `json:"id" bson:"_id,omitempty"`
 	// [longitude, latitude]
-	Loc     []float64  `json:"loc" binding:"required"`
+	Loc     GeoJson    `json:"loc" binding:"required"`
 	Address string     `json:"address"`
 	Notes   note.Notes `json:"notes"`
+}
+
+type GeoJson struct {
+	Type string `json:"-"`
+	// [longitude, latitude]
+	Coordinates []float64 `json:"coordinates"`
 }
 
 // array of points for objectManager startup
@@ -71,7 +77,7 @@ func init() {
 	pointsCollection := session.DB(databaseName).C(collectionName)
 
 	locIndex := mgo.Index{
-		Key:  []string{"$2d:loc"},
+		Key:  []string{"$2dsphere:loc"},
 		Bits: 26,
 	}
 	err := pointsCollection.EnsureIndex(locIndex)
@@ -86,6 +92,9 @@ func CreatePoint() *Point {
 	return &Point{
 		Id:      bson.NewObjectId().Hex(),
 		Address: "",
+		Loc: GeoJson{
+			Type: "Point",
+		},
 	}
 }
 
@@ -123,7 +132,7 @@ func (p *Point) SearchNear(distance int) (*Points, error) {
 	pointsCollection := session.DB(databaseName).C(collectionName)
 
 	var points Points
-	err := pointsCollection.Find(bson.M{"$near": p.Loc, "$maxDistance": distance}).All(&points)
+	err := pointsCollection.Find(bson.M{"loc": bson.M{"$near": bson.M{"$geometry": p.Loc, "$maxDistance": distance * 10}}}).All(&points)
 
 	return &points, err
 }
@@ -177,7 +186,7 @@ func (point *Point) Save() error {
 func (point *Point) PrepareToMap() *MapObject {
 	geometry := Geometry{
 		Type:   "Point",
-		Coords: []float64{point.Loc[1], point.Loc[0]},
+		Coords: []float64{point.Loc.Coordinates[1], point.Loc.Coordinates[0]},
 	}
 
 	properties := Properties{

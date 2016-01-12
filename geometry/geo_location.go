@@ -27,7 +27,7 @@ func (point *Point) defineAddress(geoCoderIndex int) {
 	}
 	geoCoder := geoCoders[geoCoderIndex]
 
-	address, err := geoCoder.ReverseGeocode(point.Loc[1], point.Loc[0])
+	address, err := geoCoder.ReverseGeocode(point.Loc.Coordinates[1], point.Loc.Coordinates[0])
 	if err != nil {
 		log.Print("Reverse geocoding failed, with error: ", err.Error())
 		point.defineAddress(geoCoderIndex + 1)

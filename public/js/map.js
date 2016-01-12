@@ -188,7 +188,7 @@ ymaps.ready(function() {
       method: 'POST',
       url: '/points',
       contentType: "application/json; charset=utf-8",
-      data: JSON.stringify({ "loc": coords.reverse() })
+      data: JSON.stringify({ "loc": {"coordinates": coords.reverse(), "-": "Point"} })
     }).done(function(data) {
       objectManager.add(data);
     }).fail(function(data, textStatus, errorThrown) {
@@ -210,7 +210,7 @@ ymaps.ready(function() {
       method: 'DELETE',
       url: '/points',
       contentType: "application/json; charset=utf-8",
-      data: JSON.stringify({ "id": object.id, "loc": coords })
+      data: JSON.stringify({ "id": object.id, "loc": {"coordinates": coords.reverse(), "-": "Point"}  })
     }).done(function(data) {
       objectManager.remove(object);
     }).fail(function(data, textStatus, errorThrown) {
@@ -233,7 +233,7 @@ ymaps.ready(function() {
         method: 'PATCH',
         url: '/points',
         contentType: "application/json; charset=utf-8",
-        data: JSON.stringify({ "id": object.id, "loc": coords })
+        data: JSON.stringify({ "id": object.id, "loc": {"coordinates": coords.reverse(), "-": "Point"} })
       }).done(function(data) {
         object.properties.hintContent = data.message;
         objectManager.objects.hint.open(objectId);
@@ -318,7 +318,7 @@ ymaps.ready(function() {
           method: 'POST',
           url: '/search/points',
           contentType: "application/json; charset=utf-8",
-          data: JSON.stringify({ "loc": coords })
+          data: JSON.stringify({ "loc": {"coordinates": coords, "-": "Point"} })
         }).done(function(data) {
           var count = data.length;
 

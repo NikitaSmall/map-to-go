@@ -27,6 +27,7 @@ func setupRoutes(router *gin.Engine) {
 	router.NoRoute(notFoundHandler)
 
 	router.GET("/points", getPointsHandler)
+	router.POST("/search/points", searchPointsNearHandler)
 	router.POST("/points", addPointHandler)
 	router.PATCH("/points", setAddressPointHandler)
 	router.DELETE("/points", deletePointHandler)

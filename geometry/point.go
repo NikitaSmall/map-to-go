@@ -1,9 +1,11 @@
 package geometry
 
 import (
+	"github.com/nikitasmall/map-to-go/Godeps/_workspace/src/gopkg.in/mgo.v2"
 	"github.com/nikitasmall/map-to-go/Godeps/_workspace/src/gopkg.in/mgo.v2/bson"
 	"github.com/nikitasmall/map-to-go/config"
 	"github.com/nikitasmall/map-to-go/note"
+	"log"
 )
 
 // configs for connection
@@ -15,6 +17,7 @@ type Pointer interface {
 	Save() error
 	Delete() error
 	PrepareToMap() *MapObject
+	SearchNear(distance int) Points
 
 	defineAddress()
 	UpdateAddress() error
@@ -60,6 +63,23 @@ type Point struct {
 // array of points for objectManager startup
 type Points []Point
 
+// setup the index for points
+func init() {
+	session := config.Connect()
+	defer session.Close()
+
+	pointsCollection := session.DB(databaseName).C(collectionName)
+
+	locIndex := mgo.Index{
+		Key:  []string{"$2d:loc"},
+		Bits: 26,
+	}
+	err := pointsCollection.EnsureIndex(locIndex)
+	if err != nil {
+		log.Print("Error on loc index setup: ", err.Error())
+	}
+}
+
 // function creates a new point with uniq ID
 // and empty address field
 func CreatePoint() *Point {
@@ -92,6 +112,18 @@ func GetPoints() (*Points, error) {
 
 	var points Points
 	err := pointsCollection.Find(nil).All(&points)
+
+	return &points, err
+}
+
+func (p *Point) SearchNear(distance int) (*Points, error) {
+	session := config.Connect()
+	defer session.Close()
+
+	pointsCollection := session.DB(databaseName).C(collectionName)
+
+	var points Points
+	err := pointsCollection.Find(bson.M{"$near": p.Loc, "$maxDistance": distance}).All(&points)
 
 	return &points, err
 }

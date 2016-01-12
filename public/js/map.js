@@ -156,7 +156,13 @@ ymaps.ready(function() {
     gridSize: 32
   });
 
+  var searchObjectManager = new ymaps.ObjectManager({
+    clusterize: true,
+    gridSize: 32
+  });
+
   config.setOptionsObjectManager(objectManager, balloonLayout.Layout, balloonLayout.ContentLayout);
+  config.setSearchOptionsObjectManager(searchObjectManager, balloonLayout.Layout, balloonLayout.ContentLayout);
   map.geoObjects.add(objectManager);
 
   // get all the points
@@ -246,7 +252,10 @@ ymaps.ready(function() {
       map.geoObjects.add(objectManager);
     }
 
+    map.geoObjects.remove(searchObjectManager);
     map.geoObjects.remove(searchCircle);
+
+    searchObjectManager.removeAll();
   });
 
   dragger.events
@@ -302,6 +311,32 @@ ymaps.ready(function() {
         map.geoObjects.add(searchCircle);
       }
 
+      if (map.geoObjects.indexOf(searchObjectManager) == -1) {
+        map.geoObjects.add(searchObjectManager);
+        var coords = [geoPosition[1], geoPosition[0]];
+        $.ajax({
+          method: 'POST',
+          url: '/search/points',
+          contentType: "application/json; charset=utf-8",
+          data: JSON.stringify({ "loc": coords })
+        }).done(function(data) {
+          var count = data.length;
+
+          searchObjectManager.add(data);
+          socket.createNotify(
+            "Search:",
+            count + " points found.",
+            "info"
+          );
+        }).fail(function(data, textStatus, errorThrown) {
+          socket.createNotify(
+            "Error occurred on the server!",
+            data.responseJSON.message,
+            "danger"
+          );
+        });
+      }
+
       map.geoObjects.remove(objectManager);
     } else {
       if (map.geoObjects.indexOf(objectManager) == -1) {
@@ -309,6 +344,7 @@ ymaps.ready(function() {
       }
 
       map.geoObjects.remove(searchCircle);
+      map.geoObjects.remove(searchObjectManager);
     }
 
     $('#marker').css('top', '5px');

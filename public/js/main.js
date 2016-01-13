@@ -335,12 +335,8 @@ ymaps.ready(function() {
   var markerOffset;
   var markerPosition;
 
-  var searchCircle = new ymaps.Circle([
-    // Координаты центра круга.
-    [55.76, 37.60],
-    // Радиус круга в метрах.
-    10000
-  ], {
+  var circleGeometry = new ymaps.geometry.Circle([30, 50], 10000);
+  var searchCircle = new ymaps.GeoObject({ geometry: circleGeometry }, {
     hintContent: "Search area. Move pin to search in another place. Right click it to stop searching."
   }, {
       fillColor: "#DB709344",
@@ -589,10 +585,10 @@ ymaps.ready(function() {
 
     switch (message.action) {
       case "point_add":
-        socket.PointAdd(objectManager, message.message)
+        socket.PointAdd(map, objectManager, searchObjectManager, searchCircle, message.message)
         break;
       case "point_remove":
-        socket.PointRemove(objectManager, message.message)
+        socket.PointRemove(map, objectManager, searchObjectManager, searchCircle, message.message)
         break;
       case "hint_added":
         socket.HintAdd(objectManager, message.message)
@@ -707,8 +703,12 @@ module.exports.HintAdd = function(objectManager, message) {
   }
 }
 
-module.exports.PointAdd = function(objectManager, message) {
+module.exports.PointAdd = function(map, objectManager, searchObjectManager, searchCircle, message) {
   objectManager.add(message);
+
+  if ((map.geoObjects.indexOf(searchCircle) != -1) && searchCircle.geometry.contains(message.geometry.coordinates)) {
+    searchObjectManager.add(message);
+  }
   createNotify(
     "New point was created!",
     "Find it on the map!",
@@ -716,9 +716,12 @@ module.exports.PointAdd = function(objectManager, message) {
   );
 }
 
-module.exports.PointRemove = function(objectManager, message) {
+module.exports.PointRemove = function(map, objectManager, searchObjectManager, searchCircle, message) {
   var obj = objectManager.objects.getById(message.id);
   if (obj) { objectManager.remove(obj); }
+  if ((map.geoObjects.indexOf(searchCircle) != -1) && searchCircle.geometry.contains(obj.geometry.coordinates)) {
+    searchObjectManager.remove(obj);
+  }
 
   createNotify(
     "Point was deleted!",

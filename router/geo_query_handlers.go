@@ -12,7 +12,7 @@ const (
 )
 
 func searchPointsNearHandler(c *gin.Context) {
-	point := &geometry.Point{}
+	point := geometry.CreatePoint()
 	bindPoint(point, c)
 
 	points, err := point.SearchNear(searchRange)
